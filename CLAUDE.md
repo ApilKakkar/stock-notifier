@@ -64,3 +64,6 @@ The page is always light ("day") — supersedes the earlier "light + dark mode" 
 - Docker dev (live edits, no rebuild): `docker compose --profile dev up web-dev`.
 - Image listens on `$PORT` (default 8080), runs as non-root, has a HEALTHCHECK — ready for GCP Cloud Run: `gcloud run deploy ml-ops-finance --source . --region asia-south1 --allow-unauthenticated`.
 - `.dockerignore` keeps data/, notebooks/, backups and .git out of the image. Never bake raw licensed data (Bloomberg) into images.
+
+## Favicon (added 2026-10-15)
+`data-lab.html` has an inline SVG favicon (data URI in `<head>`, keeps the page self-contained): dark-teal rounded tile with a 2×2 grid, top-left cell green — represents the 2×2 drill-down. Reuse it for future pages unless told otherwise.
