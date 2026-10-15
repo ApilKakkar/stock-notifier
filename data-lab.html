@@ -369,7 +369,17 @@ const DATA = {
             kids:[
               { t:'WRDS / CRSP access at IIM Udaipur', tag:'chk', d:'Gold-standard survivorship-free US data.' },
               { t:'Bloomberg booking & export policy', tag:'chk', d:'Download limits, USB/email export.' },
-              { t:'Broker account + API key', tag:['chk','To do'], d:'Fyers / Angel One — approval takes a few days.' }
+              { t:'Broker account + API key', tag:['chk','To do'], d:'Fyers / Angel One — approval takes a few days.' },
+              { t:'Free-data pull (src/ingest)', tag:['chk','Run locally'], code:'python -m src.ingest.run all',
+                d:'Pipeline built and unit-tested offline; first live run happens on your Mac (market-data sites are blocked in the cloud sandbox). Pulls Parquet to data/raw/ and records lineage + validation in manifest.json.',
+                head:['Dataset','Source','Output'],
+                rows:[['Prices NIFTY 50 + S&P 100 (2010→)','Yahoo / yfinance','data/raw/prices/{nifty50,sp100}.parquet'],
+                      ['Macro: India VIX, indices, USD/INR, gold, oil, BTC/ETH','Yahoo','data/raw/macro/macro_daily.parquet'],
+                      ['Macro: US 3M T-bill, US 10Y, VIX, India 10Y (monthly)','FRED','data/raw/macro/macro_daily.parquet'],
+                      ['US fundamentals, point-in-time (all filed versions)','SEC EDGAR (needs SEC_USER_AGENT)','data/raw/fundamentals/us_edgar_facts.parquet'],
+                      ['Not yet automated: RBI repo rate, FII/DII flows, India fundamentals','NSE / RBI / Screener','TODO']],
+                plain:true,
+                facts:[['Caveat','Current constituents only → survivorship bias until Bloomberg historical constituents'],['First run','python -m src.ingest.run all --limit 5']] }
             ]},
           { t:'Later checks', d:'Needed before scaling or going live.',
             kids:[
@@ -379,6 +389,7 @@ const DATA = {
         ]},
       { t:'Changelog', tag:['dec','Log'], d:'History of changes to this Data Laboratory (newest first).',
         list:[
+          '<b>2026-10-15</b> — Data acquisition started: built the free-data ingestion pipeline (src/ingest: universe, prices, macro, US fundamentals via EDGAR, validation, manifest) with offline tests; new card Open checks → Access & accounts → Free-data pull.',
           '<b>2026-10-15</b> — Added a browser-tab icon (favicon): dark-teal tile with a 2×2 grid, one green cell — mirrors the 2×2 drill-down.',
           '<b>2026-10-15</b> — Light day theme only: removed the automatic dark-mode palette and the dark first card; all cards are light.',
           '<b>2026-10-15</b> — Removed the landing-style hero (big title, intro text, stat chips, swirls) and the root “Start here” heading: the page is now a sub-page that opens straight on the 4 cards, with a compact top bar (logo + search). Universe / span / benchmark info remains under Universe & Scope.',
@@ -419,7 +430,7 @@ function leafHTML(n,path){
     <h3>${esc(n.t)}</h3><p class="lead">${esc(n.d||'')}</p>`;
   if(n.facts) h+=`<dl class="facts">${n.facts.map(([a,b])=>`<div><dt>${esc(a)}</dt><dd>${esc(b)}</dd></div>`).join('')}</dl>`;
   if(n.rows) h+=`<div class="tw"><table>${n.head?`<tr>${n.head.map(x=>`<th>${esc(x)}</th>`).join('')}</tr>`:''}
-    ${n.rows.map(r=>`<tr>${r.map((c,i)=>`<td>${i===0?`<code>${esc(c)}</code>`:esc(c)}</td>`).join('')}</tr>`).join('')}</table></div>`;
+    ${n.rows.map(r=>`<tr>${r.map((c,i)=>`<td>${i===0&&!n.plain?`<code>${esc(c)}</code>`:esc(c)}</td>`).join('')}</tr>`).join('')}</table></div>`;
   if(n.list) h+=`<ul class="log">${n.list.map(x=>`<li>${x}</li>`).join('')}</ul>`;
   if(parent.kids.length>1) h+=`<div class="sibs">Also in ${esc(parent.t)}:
     ${parent.kids.map((s,j)=>`<button data-sib="${j}" class="${j===me?'cur':''}">${esc(s.t)}</button>`).join('')}</div>`;

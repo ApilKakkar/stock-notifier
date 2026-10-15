@@ -44,7 +44,7 @@ Supersedes the earlier long single-scroll layout with section anchors (backup ke
 - **When an item would be a 5th child, regroup**: create sub-groups (e.g. split into two meaningful branches) so every level stays ≤ 4. Never drop or merge away an existing item to make room.
 - Node shapes:
   - Branch: `{ t, d, kids:[...] }`
-  - Leaf: `{ t, d, tag, code?, facts?:[[label,value]], head?:[...], rows?:[[...]], list?:[html] }`
+  - Leaf: `{ t, d, tag, code?, facts?:[[label,value]], head?:[...], rows?:[[...]], list?:[html], plain?:true }`
   - `tag` is `'dec' | 'chk' | 'idea' | 'later'` or `[key, 'Custom label']` (e.g. `['idea','Shortlist']`).
 - **Changelog** is the leaf at Strategy & Roadmap → Changelog (`list`, newest first). Add an entry for every update.
 - Navigation features to preserve: zoom-in/zoom-out CSS animations (origin at the clicked card), side-slide between siblings, Back / Forward / Up / Home buttons, breadcrumbs, depth dots, global search across the whole tree, deep links via `#/i/j/k`, keyboard shortcuts (Esc/Backspace = up, Alt+←/→ = back/forward, `/` = search), reduced-motion support.
@@ -67,3 +67,12 @@ The page is always light ("day") — supersedes the earlier "light + dark mode" 
 
 ## Favicon (added 2026-10-15)
 `data-lab.html` has an inline SVG favicon (data URI in `<head>`, keeps the page self-contained): dark-teal rounded tile with a 2×2 grid, top-left cell green — represents the 2×2 drill-down. Reuse it for future pages unless told otherwise.
+
+## Data ingestion (added 2026-10-15)
+- Code: `src/ingest/` — `universe.py`, `prices.py` (yfinance), `macro.py` (Yahoo + FRED), `fundamentals.py` (SEC EDGAR, point-in-time), `validate.py`, `io.py` (Parquet + `manifest.json` lineage), CLI `python -m src.ingest.run [all|universe|prices|macro|fundamentals]`. Deps in `requirements-data.txt`; offline tests in `tests/` (`python -m pytest -q tests`).
+- Output goes to `data/raw/` (git-ignored; never commit licensed/raw data). Long format: prices `date,ticker,open,high,low,close,adj_close,volume,dividends,stock_splits`; macro `date,series,value,source`; fundamentals keep every filed version with `filed` date.
+- Field mapping vs Bloomberg: `close`≈PX_LAST, `volume`≈PX_VOLUME, `adj_close`≈total-return basis.
+- The cloud sandbox and the Mac shell used by Claude cannot reach Yahoo/FRED/SEC/NSE unless those domains are allowed in Claude's network settings; the user runs the pull on their own machine (or allows the domains). Code is therefore tested offline with mocked frames — first live run may need small fixes (e.g. verify the FRED India 10Y id `INDIRLTLT01STM`, NSE/Wikipedia table formats).
+- SEC EDGAR needs `SEC_USER_AGENT` set by the user; never hardcode or send their email.
+- Known gaps: RBI repo rate, FII/DII flows, India fundamentals (Screener/NSE XBRL), Bloomberg historical constituents.
+

@@ -52,6 +52,35 @@ Open http://localhost:8080.
 
 ---
 
+## Getting data
+
+Free-data ingestion lives in `src/ingest/` and writes Parquet to `data/raw/` (git-ignored). Every run updates `data/raw/manifest.json` with source, row counts, date range, missing tickers and validation issues (data lineage).
+
+```bash
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements-data.txt
+
+python -m src.ingest.run all --limit 5     # smoke test: 5 tickers per market
+python -m src.ingest.run all               # prototype: NIFTY 50 + S&P 100 from 2010, plus macro
+```
+
+| Command | Pulls | Output |
+|---|---|---|
+| `... universe` | NIFTY 50 (NSE) and S&P 100 (Wikipedia) constituents, saved as dated snapshots | `data/raw/universe/` |
+| `... prices` | Daily OHLCV + adj close + dividends/splits (Yahoo) | `data/raw/prices/{nifty50,sp100}.parquet` |
+| `... macro` | India VIX, NIFTY/Bank NIFTY, S&P, VIX, USD/INR, gold, silver, Brent/WTI, GOLDBEES, BTC/ETH (Yahoo); US 3M T-bill, US 10Y, India 10Y monthly (FRED) | `data/raw/macro/macro_daily.parquet` |
+| `... fundamentals` | US filings, every filed version, point-in-time (SEC EDGAR) | `data/raw/fundamentals/us_edgar_facts.parquet` |
+
+Options: `--markets india us`, `--start 2010-01-01`, `--end`, `--limit N`, `--full` (refetch whole history), `--data-dir`.
+
+- **Incremental:** reruns fetch only the last 7 days and merge. Yahoo restates `adj_close` for the whole history at each dividend, so run `--full` occasionally (e.g. monthly).
+- **SEC EDGAR** requires you to identify yourself: `export SEC_USER_AGENT="Your Name you@example.com"` (skipped with a warning if unset).
+- **Survivorship bias:** universes are *current* constituents. To use a fixed list instead, put `configs/universe/nifty50.csv` or `sp100.csv` (with a `ticker` column) in place. Replace with Bloomberg historical constituents when available.
+- **Not automated yet:** RBI repo rate, FII/DII flows, India fundamentals (Screener / NSE XBRL).
+- **Tests (offline):** `python -m pytest -q tests`
+
+---
+
 ## Routes
 
 | Route | What it does |
@@ -93,12 +122,15 @@ docker run -p 8080:8080 ml-ops-finance
 ├── data-lab.v1-sections.bak.html   # earlier single-scroll version (kept for reference)
 ├── Dockerfile             # python:3.12-slim, uvicorn, non-root, healthcheck
 ├── docker-compose.yml     # `web` (prod-like) and `web-dev` (live reload) services
-├── requirements.txt       # fastapi, uvicorn
+├── requirements.txt       # web app: fastapi, uvicorn
+├── requirements-data.txt  # ingestion: pandas, pyarrow, yfinance, requests, lxml, pytest
+├── src/ingest/            # universe, prices, macro, fundamentals, validate, CLI (run.py)
+├── tests/                 # offline tests for the ingestion code
 ├── CLAUDE.md              # project conventions + rules for updating the Data Lab
 └── .vscode/               # Live Server recommendation
 ```
 
-Planned folders for the modelling work (not in git yet): `data/raw`, `data/processed`, `src/`, `backtest/`, `notebooks/`, `configs/`.
+Planned folders for the modelling work (not in git yet): `data/processed`, `backtest/`, `notebooks/`, `configs/`.
 
 ---
 
