@@ -9,44 +9,32 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600;700&display=swap" rel="stylesheet"><!-- optional font; falls back to system fonts offline -->
 <style>
+/* Same tokens as info-box.html (Syntix-style, light day theme only) */
 :root{
   color-scheme:light;
   --page:#c6e0e4; --page2:#dcecee; --cream:#fbf7f3; --surface:#ffffff;
   --ink:#10332e; --muted:#566f6b; --line:#e5eae7;
-  --dark:#0d3531; --dark-ink:#e9f6f1; --dark-muted:#a8cfc6; --accent:#3fb36b;
+  --dark:#0d3531; --dark-ink:#e9f6f1; --accent:#3fb36b;
   --teal:#2a7a82; --teal-soft:#e4f1f2; --teal-mid:#bcdadd;
-  --ok:#1d7a4a; --okbg:#dff3e7; --warn:#8a5a00; --warnbg:#fbefd2;
+  --ok:#1d7a4a; --okbg:#dff3e7; --warn:#8a5a00; --warnbg:#fbefd2; --bad:#a3302a; --badbg:#f8e1df;
   --shadow:0 10px 30px rgba(16,51,46,.08); --glass:rgba(255,255,255,.6);
-  --swirl:#fff; --swirl-o:.45; --ease:cubic-bezier(.2,.8,.2,1); --dur:.5s;
+  --c1:#2a7a82; --c2:#3fb36b; --c3:#c98a1a; --c4:#7a4fb0;
+  --ease:cubic-bezier(.2,.8,.2,1); --dur:.45s;
 }
 *{box-sizing:border-box}
 body{margin:0;color:var(--ink);font:15px/1.6 "Urbanist",-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif;
   background:linear-gradient(180deg,var(--page) 0,var(--page2) 480px,var(--page) 100%);min-height:100vh}
-button{font:inherit;color:inherit}
-/* hero */
-.hero{position:relative;overflow:hidden;padding:24px 24px 30px}
-.swirl{position:absolute;pointer-events:none;opacity:var(--swirl-o)}
-.s1{left:-60px;top:120px;width:240px} .s2{right:-50px;top:20px;width:260px}
-.wrap{position:relative;z-index:1;max-width:1040px;margin:0 auto}
-.brand{display:flex;align-items:center;justify-content:space-between;margin-bottom:26px}
-.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:22px;letter-spacing:-.02em}
-.logo i{width:30px;height:30px;border-radius:9px;background:var(--dark);display:grid;place-items:center;color:var(--accent);font-style:normal;font-size:15px}
-.pill{font-size:12px;font-weight:600;background:var(--glass);border:1px solid var(--teal-mid);padding:6px 12px;border-radius:999px}
-h1{margin:0;text-align:center;font-size:clamp(30px,5vw,46px);line-height:1.12;letter-spacing:-.025em;font-weight:700}
-.sub{text-align:center;color:var(--muted);margin:10px auto 16px;max-width:620px}
-.stats{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-bottom:18px}
-.stats span{font-size:12.5px;background:var(--glass);border:1px solid var(--teal-mid);padding:5px 12px;border-radius:3px}
-.stats b{font-weight:700}
-.searchwrap{display:flex;justify-content:center}
-.search{width:100%;max-width:440px;padding:12px 18px;border:1px solid var(--teal-mid);border-radius:999px;background:var(--glass);color:var(--ink);font:inherit;font-size:14px;box-shadow:var(--shadow)}
-.search:focus{outline:2px solid var(--accent);border-color:transparent}
-/* compact top bar (sub-page: no hero) */
+button,select,input{font:inherit;color:inherit}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:-.02em}
+.logo i{background:var(--dark);display:grid;place-items:center;color:var(--accent);font-style:normal}
 .topbar{padding:10px 24px}
 .topbar .bar{max-width:1040px;margin:0 auto;display:flex;align-items:center;gap:16px}
 .topbar .logo{font-size:17px;white-space:nowrap;flex:none}
-@media (max-width:720px){.topbar{padding:10px 16px} .topbar .search{max-width:none;flex:1;min-width:0}} .topbar .logo i{width:26px;height:26px;border-radius:8px;font-size:13px}
-.topbar .search{margin-left:auto;max-width:320px;padding:8px 16px;box-shadow:none}
-/* band + toolbar */
+.topbar .logo i{width:26px;height:26px;border-radius:8px;font-size:13px}
+.xlink{font-size:13px;font-weight:600;color:var(--teal);text-decoration:none;border:1px solid var(--teal-mid);border-radius:3px;padding:5px 11px;background:var(--glass);white-space:nowrap}
+.xlink:hover{background:var(--teal-soft)}
+.status{margin-left:auto;font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.status b{color:var(--ink)}
 .band{background:var(--cream);border-radius:22px 22px 0 0;box-shadow:0 -10px 40px rgba(16,51,46,.06);min-height:calc(100vh - 56px)}
 main{max-width:1040px;margin:0 auto;padding:18px 24px 40px}
 .toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:18px}
@@ -58,502 +46,482 @@ main{max-width:1040px;margin:0 auto;padding:18px 24px 40px}
 .nb.primary:hover:not(:disabled){background:var(--dark);filter:brightness(1.15)}
 .crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin-left:6px;font-size:13.5px;color:var(--muted)}
 .crumbs a{color:var(--teal);text-decoration:none;font-weight:600;cursor:pointer}
-.crumbs a:hover{text-decoration:underline} .crumbs .sep{opacity:.5} .crumbs .here{color:var(--ink);font-weight:700}
-.depth{margin-left:auto;display:flex;gap:5px}
-.depth i{width:8px;height:8px;border-radius:2px;background:var(--teal-mid)} .depth i.on{background:var(--accent)}
-/* stage + views */
-.stage{position:relative;perspective:1200px}
-.view{will-change:transform,opacity}
+.crumbs .sep{opacity:.5} .crumbs .here{color:var(--ink);font-weight:700}
 .vhead{margin:0 0 16px}
 .vhead h2{font-size:26px;letter-spacing:-.02em;margin:0;display:flex;align-items:center;gap:10px}
 .vhead h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--accent)}
 .vhead p{margin:4px 0 0;color:var(--muted)}
+/* root cards */
 .grid4{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.grid4.n3 .card:nth-child(3){grid-column:span 2}
-.card{position:relative;text-align:left;cursor:pointer;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:20px 22px 56px;min-height:200px;
+.card{position:relative;display:flex;flex-direction:column;justify-content:flex-start;text-align:left;cursor:pointer;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:20px 22px 56px;min-height:200px;
   box-shadow:0 4px 18px rgba(16,51,46,.05);transition:transform .2s var(--ease),box-shadow .2s;animation:pop .45s var(--ease) both;animation-delay:var(--d,0ms)}
 .card:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
 .card:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
-.card.dark{background:var(--dark);border-color:var(--dark);color:var(--dark-ink)}
-.card.dark p,.card.dark .eyebrow{color:var(--dark-muted)}
-.eyebrow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:6px}
-.card.dark .eyebrow .count{color:var(--accent)}
 .card h3{margin:0 0 6px;font-size:21px;letter-spacing:-.02em;line-height:1.2}
 .card p{margin:0;color:var(--muted);font-size:14px}
-.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
-.chips span{font-size:12px;padding:3px 9px;border-radius:999px;background:var(--teal-soft);color:var(--teal);font-weight:600}
-.card.dark .chips span{background:rgba(255,255,255,.08);color:var(--dark-ink)}
+.card .big{font-size:30px;font-weight:700;letter-spacing:-.03em;margin:10px 0 0;line-height:1.1}
+.card .big small{font-size:13px;font-weight:600;color:var(--muted);letter-spacing:0;margin-left:6px}
+.card svg.spark{display:block;width:100%;height:46px;margin-top:10px}
+.eyebrow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:6px}
 .go{position:absolute;right:16px;bottom:14px;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:var(--surface);border:1px solid var(--line);font-size:17px;box-shadow:var(--shadow);transition:transform .2s var(--ease)}
 .card:hover .go{transform:translateX(3px)}
-.card.dark .go{background:var(--accent);border-color:var(--accent);color:var(--dark)}
-code{font:12px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--teal-soft);color:var(--teal);padding:1px 6px;border-radius:5px;text-transform:none;letter-spacing:0;overflow-wrap:anywhere}
-.card.dark code{background:rgba(255,255,255,.1);color:var(--accent)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.chips span{font-size:12px;padding:3px 9px;border-radius:999px;background:var(--teal-soft);color:var(--teal);font-weight:600}
+code{font:12px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--teal-soft);color:var(--teal);padding:1px 6px;border-radius:5px;overflow-wrap:anywhere}
 .tag{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:3px 9px;border-radius:999px;white-space:nowrap}
-.t-dec{background:var(--okbg);color:var(--ok)} .t-chk{background:var(--warnbg);color:var(--warn)}
-.t-idea{background:var(--teal-soft);color:var(--teal)} .t-later{background:var(--line);color:var(--muted)}
-/* leaf detail */
-.detail{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:28px 30px;box-shadow:var(--shadow);animation:pop .45s var(--ease) both}
-.detail h3{font-size:30px;letter-spacing:-.025em;margin:4px 0 8px;line-height:1.15}
-.detail .lead{font-size:16.5px;color:var(--ink);margin:0 0 18px;max-width:760px}
-.facts{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin:0 0 18px}
-.facts div{background:var(--teal-soft);border-radius:12px;padding:10px 14px}
-.facts dt{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--teal)}
-.facts dd{margin:2px 0 0;font-size:14px}
-table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid var(--line);border-radius:14px;overflow:hidden;font-size:14px;margin:0 0 18px}
-th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top}
-th{background:var(--teal-soft);color:var(--teal);font-weight:700;font-size:11.5px;text-transform:uppercase;letter-spacing:.06em}
+.t-ok{background:var(--okbg);color:var(--ok)} .t-warn{background:var(--warnbg);color:var(--warn)} .t-bad{background:var(--badbg);color:var(--bad)} .t-info{background:var(--teal-soft);color:var(--teal)}
+/* panels */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:22px 24px;box-shadow:var(--shadow);margin-bottom:16px;animation:pop .4s var(--ease) both}
+.panel h4{margin:0 0 12px;font-size:13px;text-transform:uppercase;letter-spacing:.07em;color:var(--teal)}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px}
+.seg{display:inline-flex;border:1px solid var(--teal-mid);border-radius:3px;overflow:hidden;background:var(--surface)}
+.seg button{border:0;background:none;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer;border-right:1px solid var(--teal-mid)}
+.seg button:last-child{border-right:0}
+.seg button.on{background:var(--dark);color:#fff}
+.seg button:hover:not(.on){background:var(--teal-soft)}
+select,.inp{height:34px;border:1px solid var(--teal-mid);border-radius:3px;background:var(--surface);padding:0 10px;font-size:13.5px}
+.inp:focus,select:focus{outline:2px solid var(--accent);border-color:transparent}
+.picked{display:flex;flex-wrap:wrap;gap:6px}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;padding:4px 6px 4px 10px;border-radius:999px;background:var(--teal-soft)}
+.pill i{width:9px;height:9px;border-radius:50%;display:inline-block}
+.pill button{border:0;background:none;cursor:pointer;color:var(--muted);font-size:14px;line-height:1;padding:0 4px}
+.pill button:hover{color:var(--bad)}
+.hint{font-size:12.5px;color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:10px;margin:0 0 14px}
+.stats div{background:var(--teal-soft);border-radius:12px;padding:9px 13px;min-width:0}
+.stats dt{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--teal);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stats dd{margin:2px 0 0;font-size:17px;font-weight:700;letter-spacing:-.01em}
+.pos{color:var(--ok)} .neg{color:var(--bad)}
+/* charts */
+.chart{position:relative;width:100%;user-select:none}
+.chart svg{display:block;width:100%;overflow:visible}
+.chart .axis text{font-size:11px;fill:var(--muted)}
+.chart .grid line{stroke:var(--line)}
+.tip{position:absolute;pointer-events:none;background:var(--dark);color:#fff;border-radius:10px;padding:8px 11px;font-size:12px;line-height:1.45;box-shadow:var(--shadow);white-space:nowrap;opacity:0;transition:opacity .1s;z-index:3}
+.tip b{color:var(--accent)} .tip i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+/* tables */
+table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid var(--line);border-radius:14px;overflow:hidden;font-size:13.5px}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--teal-soft);color:var(--teal);font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+td code,td.nw{white-space:nowrap}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
 tr:last-child td{border-bottom:0}
-.tw{overflow-x:auto}
-ul.log{margin:0 0 18px;padding-left:20px;color:var(--muted)} ul.log b{color:var(--ink)} ul.log li{margin-bottom:6px}
-.sibs{border-top:1px solid var(--line);padding-top:14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;color:var(--muted)}
-.sibs button{border:1px solid var(--teal-mid);background:var(--glass);border-radius:999px;padding:5px 12px;cursor:pointer;font-size:12.5px;font-weight:600}
-.sibs button:hover{background:var(--teal-soft)} .sibs button.cur{background:var(--dark);color:#fff;border-color:var(--dark)}
-/* search results */
-.results{display:flex;flex-direction:column;gap:8px}
-.res{display:flex;justify-content:space-between;gap:12px;align-items:center;text-align:left;cursor:pointer;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 16px;animation:pop .3s var(--ease) both;animation-delay:var(--d,0ms)}
-.res:hover{border-color:var(--accent)}
-.res small{display:block;color:var(--muted);font-size:12px} .res b{font-size:15px}
-.empty{color:var(--muted);padding:30px 0;text-align:center}
-.legend{margin-top:26px;font-size:12.5px;color:var(--muted);display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+tbody tr.click{cursor:pointer} tbody tr.click:hover td{background:#f6fbfa}
+.tw{overflow-x:auto;max-height:520px;overflow-y:auto}
+.empty{color:var(--muted);padding:26px 10px;text-align:center}
+.empty pre{display:inline-block;text-align:left;background:var(--teal-soft);color:var(--teal);padding:12px 16px;border-radius:12px;font-size:12.5px;margin:12px 0 0;white-space:pre-wrap}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 footer{padding:24px;color:var(--muted);font-size:12.5px;text-align:center;background:linear-gradient(180deg,var(--cream),var(--page2))}
-/* animations */
 @keyframes pop{from{opacity:0;transform:translateY(10px) scale(.98)}}
-@keyframes inLeave{to{opacity:0;transform:scale(1.5);filter:blur(3px)}}
-@keyframes inEnter{from{opacity:0;transform:scale(.3)}}
-@keyframes outLeave{to{opacity:0;transform:scale(.3)}}
-@keyframes outEnter{from{opacity:0;transform:scale(1.5);filter:blur(3px)}}
-@keyframes sideLeaveL{to{opacity:0;transform:translateX(-60px) rotateY(8deg)}}
-@keyframes sideEnterR{from{opacity:0;transform:translateX(60px) rotateY(-8deg)}}
-@keyframes sideLeaveR{to{opacity:0;transform:translateX(60px) rotateY(-8deg)}}
-@keyframes sideEnterL{from{opacity:0;transform:translateX(-60px) rotateY(8deg)}}
-.leave{position:absolute;left:0;right:0;top:0;pointer-events:none;z-index:2}
-.leave-in{animation:inLeave var(--dur) var(--ease) forwards}
-.enter-in{animation:inEnter var(--dur) var(--ease) both}
-.leave-out{animation:outLeave var(--dur) var(--ease) forwards}
-.enter-out{animation:outEnter var(--dur) var(--ease) both}
-.leave-next{animation:sideLeaveL var(--dur) var(--ease) forwards} .enter-next{animation:sideEnterR var(--dur) var(--ease) both}
-.leave-prev{animation:sideLeaveR var(--dur) var(--ease) forwards} .enter-prev{animation:sideEnterL var(--dur) var(--ease) both}
+@keyframes zin{from{opacity:0;transform:scale(.6)}}
+@keyframes zout{from{opacity:0;transform:scale(1.25);filter:blur(3px)}}
+.zin{animation:zin var(--dur) var(--ease) both} .zout{animation:zout var(--dur) var(--ease) both}
+.skel{height:280px;border-radius:14px;background:linear-gradient(90deg,var(--teal-soft),#f3f9f8,var(--teal-soft));background-size:200% 100%;animation:sk 1.2s linear infinite}
+@keyframes sk{to{background-position:-200% 0}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 @media (max-width:720px){
-  .hero{padding:20px 16px 24px} main{padding:18px 16px 40px} .band{border-radius:26px 26px 0 0}
-  .grid4{grid-template-columns:1fr} .grid4.n3 .card:nth-child(3){grid-column:auto}
-  .card{min-height:0} .depth{display:none} .detail{padding:22px 20px} .detail h3{font-size:24px}
+  .topbar{padding:10px 16px} main{padding:18px 16px 40px} .status{display:none}
+  .grid4,.two{grid-template-columns:1fr} .card{min-height:0} .panel{padding:18px 16px}
 }
 </style>
 </head>
 <body>
 <header class="topbar">
   <div class="bar">
+    <a class="xlink" href="/" title="Back to the Stock Notifier home page">← Stock Notifier</a>
     <div class="logo"><i>◆</i>Data Lab</div>
-    <input class="search" id="q" type="search" placeholder="Search everything… (ROE, VIX, tax)" title="Press / to focus" autocomplete="off">
+    <div class="status" id="status">Loading…</div>
   </div>
 </header>
 
 <div class="band"><main>
   <div class="toolbar">
     <button class="nb" id="bk" title="Back (Alt+←)">← Back</button>
-    <button class="nb" id="fw" title="Forward (Alt+→)">Forward →</button>
-    <button class="nb" id="up" title="Up one level (Esc)">↑ Up</button>
-    <button class="nb primary" id="home" title="Home">⌂ Home</button>
+    <button class="nb primary" id="home" title="Home (Esc)">⌂ Home</button>
+    <button class="nb" id="reload" title="Re-read the data files">↻ Refresh</button>
     <nav class="crumbs" id="crumbs" aria-label="Breadcrumb"></nav>
-    <div class="depth" id="depth" aria-hidden="true"></div>
   </div>
-  <div class="stage" id="stage" aria-live="polite"></div>
-  <div class="legend">Legend:
-    <span class="tag t-dec">Decided</span><span class="tag t-chk">To check</span><span class="tag t-idea">Idea</span><span class="tag t-later">Later</span>
-    · Bloomberg field mnemonics are starting points — confirm with <code>FLDS</code> / <code>HELP HELP</code> at the terminal.
-  </div>
+  <div id="stage" aria-live="polite"></div>
 </main></div>
-<footer>Data Laboratory · append-only notebook · content lives in the <code>DATA</code> tree in this file · see CLAUDE.md for update rules</footer>
+<footer>Data Laboratory · read-only view of <code>data/raw</code> (Parquet + manifest.json) · fill it with <code>python -m src.ingest.run all</code></footer>
 
 <script>
 /* ============================================================
-   DATA TREE — single source of truth for the Data Laboratory.
-   Rules (see CLAUDE.md): max 4 children per node (2–4 preferred);
-   when a 5th item arrives, regroup into sub-groups — never drop items.
-   Branch: {t, d, kids:[...]}
-   Leaf:   {t, d, tag:'dec'|'chk'|'idea'|'later' or [key,'Label'],
-            code?, facts?:[[label,value]], head?:[...], rows?:[[...]], list?:[html]}
+   DATA LABORATORY — viewer for the data we actually collected.
+   Reads the read-only JSON API in app/main.py (/api/data/*).
+   Root = 4 cards (max 4 per level, same rule as the Information Box):
+     Overview · Prices · Macro · Universe
+   Deep links: #/prices?m=nifty50&t=RELIANCE.NS,TCS.NS&r=5y&f=adj_close
    ============================================================ */
-const DATA = {
- t:'Data Laboratory', d:'Four pillars of the lab — pick one to drill in.',
- kids:[
-  { t:'Universe & Scope', d:'What we trade, over which period, and what we must beat.',
-    kids:[
-      { t:'Universe', d:'Which stocks are in the game.',
-        kids:[
-          { t:'Prototype universe', tag:'dec', d:'NIFTY 50 (India) + S&P 100 (US). Prove the pipeline end-to-end before scaling.',
-            facts:[['India','NIFTY 50'],['US','S&P 100'],['Why','Small, liquid, fast to iterate']] },
-          { t:'Full universe', tag:'later', code:'INDX_MWEIGHT_HIST', d:'NIFTY 200 (skip NIFTY 500 — small caps too illiquid) + S&P 500. Use historical constituents incl. delisted names to avoid survivorship bias.',
-            facts:[['India','NIFTY 200'],['US','S&P 500'],['Must have','Historical constituents incl. delisted']] }
-        ]},
-      { t:'Time & frequency', d:'History length and data cadence.',
-        kids:[
-          { t:'Time span', tag:'dec', d:'2010 → 2026, daily. Covers the taper tantrum, 2015–16, 2018, the COVID crash and the 2022 hikes — enough regimes to stress-test.',
-            facts:[['Start','2010'],['End','2026'],['Regimes','2013, 2015–16, 2018, 2020, 2022']] },
-          { t:'Frequency', tag:'dec', d:'Daily prices; quarterly fundamentals. Rebalance weekly/monthly — frictions kill high-frequency ideas.',
-            facts:[['Prices','Daily'],['Fundamentals','Quarterly'],['Rebalance','Weekly / monthly']] }
-        ]},
-      { t:'Benchmark', tag:'dec', d:'Plain NIFTY 50 index fund (INR, net of costs). Every strategy must beat this after all frictions — costs, taxes, FX and LRS lag.',
-        facts:[['Benchmark','NIFTY 50 index fund'],['Currency','INR'],['Measured','Net of all frictions']] }
-    ]},
+const VIEWS = [
+  { id:'overview', t:'Overview',  d:'What has been pulled: datasets, rows, date ranges, gaps and validation issues (manifest.json).' },
+  { id:'prices',   t:'Prices',    d:'Daily stock prices for NIFTY 50 and S&P 100 — chart, volume, returns, drawdown, compare up to 4.' },
+  { id:'macro',    t:'Macro',     d:'Market backdrop: India VIX, USD/INR, gold, oil, crypto, rates and indices.' },
+  { id:'universe', t:'Universe',  d:'The stock lists we pull, and which stocks already have price data.' },
+];
+const MARKET_LABEL = { nifty50:'NIFTY 50', sp100:'S&P 100' };
+const MACRO_LABEL = {
+  nifty50:'NIFTY 50 index', bank_nifty:'Bank NIFTY', india_vix:'India VIX', usdinr:'USD/INR', goldbees_inr:'GOLDBEES (₹)',
+  india_10y_monthly:'India 10Y yield (monthly)', sp500:'S&P 500', sp100:'S&P 100 index', vix:'VIX', vix_fred:'VIX (FRED)',
+  us_10y:'US 10Y yield', us_3m_tbill:'US 3M T-bill', gold_usd:'Gold ($)', silver_usd:'Silver ($)', brent:'Brent crude ($)',
+  wti:'WTI crude ($)', btc_usd:'Bitcoin ($)', eth_usd:'Ethereum ($)' };
+const RANGES = [['1y','1Y'],['3y','3Y'],['5y','5Y'],['10y','10Y'],['all','All']];
+const COLORS = ['var(--c1)','var(--c2)','var(--c3)','var(--c4)'];
 
-  { t:'Data', d:'Prices, fundamentals, macro context and India-specific signals.',
-    kids:[
-      { t:'Prices & corporate actions', d:'Daily price fields and the events that distort them.',
-        kids:[
-          { t:'Daily price fields', d:'Core daily series to pull for every stock.',
-            kids:[
-              { t:'Price & volume', tag:'dec', d:'Raw daily trading data — the base of momentum, volatility and liquidity features.',
-                head:['Field','What it is','Why we need it'],
-                rows:[['PX_LAST','Closing price','Core price series; momentum, volatility features'],
-                      ['PX_VOLUME','Shares traded','Liquidity filter, slippage model, volume signals'],
-                      ['PX_OPEN / PX_HIGH / PX_LOW','OHLC','Next-open execution, range/volatility features']] },
-              { t:'Returns & size', tag:'dec', d:'Adjusted returns and size measures — needed for correct performance and the size factor.',
-                head:['Field','What it is','Why we need it'],
-                rows:[['TOT_RETURN_INDEX_GROSS_DVDS','Total-return index (splits + dividends adjusted)','Correct returns — raw prices drop on dividend/bonus dates'],
-                      ['CUR_MKT_CAP','Market capitalisation','Size factor, weighting, universe filter'],
-                      ['EQY_SH_OUT','Shares outstanding','Recompute market cap, catch dilution/buybacks']] }
-            ]},
-          { t:'Corporate actions', d:'Events that change share count or identity. Bloomberg CACS.',
-            kids:[
-              { t:'Splits & bonuses', tag:'dec', d:'Change share count without changing value. Must adjust prices or returns look like crashes.' },
-              { t:'Dividends', tag:'dec', d:'Cash paid out; price drops on ex-date. Captured by the total-return index; track yield separately.' },
-              { t:'Mergers, demergers, delistings', tag:'dec', code:'CACS', d:'Ticker changes and exits. Critical for survivorship-free history.' },
-              { t:'Buybacks / rights issues', tag:'idea', d:'Shift share count and signal management’s view on valuation.' }
-            ]}
-        ]},
-      { t:'Fundamentals', d:'Quarterly company metrics, joined point-in-time.',
-        kids:[
-          { t:'Valuation', d:'How expensive is the stock?',
-            kids:[
-              { t:'P/E', tag:'dec', code:'PE_RATIO', d:'Price ÷ earnings per share. How many rupees/dollars you pay for ₹1/$1 of profit. Low = cheap (or troubled).' },
-              { t:'P/B', tag:'dec', code:'PX_TO_BOOK_RATIO', d:'Price ÷ book value per share. Valuation vs net assets; most useful for banks and asset-heavy firms.' },
-              { t:'EV/EBITDA', tag:'dec', code:'CURRENT_EV_TO_T12M_EBITDA', d:'Enterprise value ÷ operating cash profit. Capital-structure-neutral valuation; compares firms with different debt.' }
-            ]},
-          { t:'Quality & risk', d:'How good and how fragile is the business?',
-            kids:[
-              { t:'ROE', tag:'dec', code:'RETURN_COM_EQY', d:'Net income ÷ shareholders’ equity. How efficiently the company turns owners’ money into profit — a quality signal.' },
-              { t:'Debt/Equity', tag:'dec', code:'TOT_DEBT_TO_TOT_EQY', d:'Total debt ÷ equity. Leverage and balance-sheet risk; high values hurt in rate-hike regimes.' },
-              { t:'Gross margin', tag:'dec', code:'GROSS_MARGIN', d:'(Revenue − COGS) ÷ revenue. Pricing power; stable margins = quality.' }
-            ]},
-          { t:'Growth & earnings', d:'Is the business growing, and beating expectations?',
-            kids:[
-              { t:'EPS', tag:'dec', code:'IS_EPS', d:'Earnings per share. Base for growth and earnings-surprise features.' },
-              { t:'Revenue & growth', tag:'dec', code:'SALES_REV_TURN', d:'Top-line sales and YoY/QoQ growth. Growth factor; harder to manipulate than earnings.' },
-              { t:'Consensus EPS', tag:'dec', code:'BEST_EPS', d:'Analyst consensus estimate. Actual − consensus = earnings surprise, a classic drift signal.' }
-            ]},
-          { t:'Rules, sources & classification', d:'How to join fundamentals safely and where to get them.',
-            kids:[
-              { t:'Point-in-time rule', tag:'dec', d:'Join fundamentals on the filing/announcement date, not period-end. If only period-end is known, lag 45–60 days. Otherwise: look-ahead bias.',
-                facts:[['Join key','Filing / announcement date'],['Fallback','Period-end + 45–60 days'],['Avoids','Look-ahead bias']] },
-              { t:'Free fundamentals — India', tag:'idea', d:'Screener.in Excel export (per company, for validation) and NSE/BSE XBRL filings (automatable, include filing dates).',
-                facts:[['Validate','Screener.in export'],['Automate','NSE/BSE XBRL filings']] },
-              { t:'Free fundamentals — US', tag:'dec', code:'edgartools', d:'SEC EDGAR XBRL API / edgartools — official, full history, includes the filed date.',
-                facts:[['Source','SEC EDGAR XBRL'],['Point-in-time','filed date included']] },
-              { t:'Sector', tag:'dec', code:'GICS_SECTOR_NAME', d:'Industry classification. Sector-neutral ranking; avoid accidentally betting on one sector.' }
-            ]}
-        ]},
-      { t:'Market & macro', d:'Context series for India, the US and commodities.',
-        kids:[
-          { t:'India', d:'Indian market regime, rates and currency.',
-            kids:[
-              { t:'Markets', d:'Benchmarks and fear gauge.',
-                kids:[
-                  { t:'NIFTY 50 / Bank NIFTY', tag:'dec', d:'Market and banking-sector benchmarks; regime and beta features.', facts:[['Source','Bloomberg, NSE, broker API']] },
-                  { t:'India VIX', tag:'dec', d:'Expected 30-day NIFTY volatility — the “fear gauge”; de-risk trigger.', facts:[['Source','NSE, Bloomberg']] }
-                ]},
-              { t:'Rates & FX', d:'Cost of money and the rupee.',
-                kids:[
-                  { t:'RBI policy (repo) rate', tag:'dec', d:'Cost of money; hikes pressure valuations and leveraged firms.', facts:[['Source','RBI DBIE, Bloomberg']] },
-                  { t:'India 10Y G-sec yield', tag:'dec', d:'Risk-free long rate; discount rate for equities.', facts:[['Source','Bloomberg, RBI']] },
-                  { t:'USD/INR', tag:'dec', code:'USDINR Curncy', d:'Converts US returns to INR; rupee weakness adds to US returns.', facts:[['Source','Bloomberg, Alpha Vantage']] }
-                ]}
-            ]},
-          { t:'US', d:'US market regime, rates and event calendar.',
-            kids:[
-              { t:'Markets', d:'Benchmark and volatility.',
-                kids:[
-                  { t:'S&P 500 / S&P 100', tag:'dec', d:'US benchmark and prototype universe.', facts:[['Source','Bloomberg, yfinance, Tiingo']] },
-                  { t:'VIX', tag:'dec', code:'VIX Index', d:'Expected 30-day S&P volatility; global risk-on/off signal.', facts:[['Bloomberg','VIX Index'],['FRED','VIXCLS']] }
-                ]},
-              { t:'Rates', d:'Risk-free and long rates.',
-                kids:[
-                  { t:'3M T-bill', tag:'dec', code:'USGG3M Index', d:'US risk-free rate for the Sharpe ratio and cash return.', facts:[['FRED','DTB3'],['Bloomberg','USGG3M Index']] },
-                  { t:'US 10Y Treasury yield', tag:'dec', code:'USGG10YR Index', d:'Global discount rate; drives growth-vs-value rotation.', facts:[['FRED','DGS10'],['Bloomberg','USGG10YR Index']] }
-                ]},
-              { t:'FOMC & earnings dates', tag:'dec', code:'ECO', d:'Event calendar; avoid trading into known volatility.', facts:[['Source','Bloomberg ECO, Fed site']] }
-            ]},
-          { t:'Commodities & crypto', d:'Diversifiers and macro shocks.',
-            kids:[
-              { t:'Gold', tag:'dec', code:'XAU Curncy', d:'Crisis hedge. XAU spot plus GOLDBEES / MCX gold for the INR view (includes import duty).' },
-              { t:'Oil', tag:'dec', code:'CO1 Comdty', d:'India is a big importer — oil shocks hit INR and margins. Brent CO1 Comdty, WTI CL1 Comdty (roll-adjusted).', facts:[['Brent','CO1 Comdty'],['WTI','CL1 Comdty']] },
-              { t:'Crypto (BTC, ETH)', tag:'dec', code:'ccxt', d:'Free via Binance / ccxt. History only from ~2015–17 — align backtest windows.' },
-              { t:'Silver', tag:'later', code:'XAG Curncy', d:'Optional diversifier.' }
-            ]}
-        ]},
-      { t:'India signals', d:'Local data that big global models tend to ignore.',
-        kids:[
-          { t:'Flows', d:'Who is buying and selling.',
-            kids:[
-              { t:'FII / DII daily flows', tag:'idea', d:'Net buying by foreign vs domestic institutions (NSE daily). Persistent FII selling often precedes weakness.', facts:[['Source','NSE daily']] },
-              { t:'AMFI SIP inflows', tag:'idea', d:'Monthly retail mutual-fund inflows — a retail sentiment proxy.', facts:[['Source','AMFI monthly']] },
-              { t:'Bulk & block deals', tag:'idea', d:'Large disclosed trades by big players (NSE/BSE daily).', facts:[['Source','NSE / BSE daily']] }
-            ]},
-          { t:'Disclosures & text', d:'Insider behaviour and management tone.',
-            kids:[
-              { t:'Promoter holding & pledging', tag:'idea', d:'Rising pledges = promoter stress; insider buying = conviction. From shareholding filings.' },
-              { t:'Concall sentiment (LLM)', tag:'later', d:'Score Indian earnings-call transcripts for tone and guidance changes.' }
-            ]}
-        ]}
-    ]},
+/* ----------------------------------------------------------- utils */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let LOC = 'en-IN';   // lakh/crore grouping for India; switched to en-US for US / $ data
+const nf = (v, d=2) => v==null || isNaN(v) ? '—' : Number(v).toLocaleString(LOC, {maximumFractionDigits:d, minimumFractionDigits:d});
+const big = v => v==null ? '—' : LOC==='en-US' ? (v>=1e9 ? (v/1e9).toFixed(2)+' B' : v>=1e6 ? (v/1e6).toFixed(2)+' M' : v>=1e3 ? (v/1e3).toFixed(1)+'k' : String(Math.round(v))) : v>=1e7 ? (v/1e7).toFixed(2)+' Cr' : v>=1e5 ? (v/1e5).toFixed(2)+' L' : v>=1e3 ? (v/1e3).toFixed(1)+'k' : String(Math.round(v));
+const pct = (v, d=1) => v==null ? '—' : `<span class="${v>=0?'pos':'neg'}">${v>=0?'+':''}${(v*100).toFixed(d)}%</span>`;
+const bytes = b => b>1e6 ? (b/1e6).toFixed(1)+' MB' : b>1e3 ? (b/1e3).toFixed(0)+' KB' : b+' B';
+const ago = iso => { if(!iso) return '—'; const m=(Date.now()-new Date(iso))/6e4;
+  return m<1?'just now':m<60?Math.round(m)+' min ago':m<1440?Math.round(m/60)+' h ago':Math.round(m/1440)+' d ago'; };
+const startFor = r => { if(!r || r==='all') return ''; const d=new Date(); d.setFullYear(d.getFullYear()-parseInt(r)); return d.toISOString().slice(0,10); };
+const label = s => MACRO_LABEL[s] || s;
+const INDIA_SERIES = /nifty50|bank_nifty|india|goldbees|usdinr/;
 
-  { t:'Sources & Infrastructure', d:'Where data comes from, how trades execute, where compute runs.',
-    kids:[
-      { t:'India brokers', d:'Broker APIs for Indian prices and paper signals.',
-        kids:[
-          { t:'Fyers API v3', tag:['idea','Shortlist'], d:'India daily/intraday candles and websockets.', facts:[['Cost','Free with account']] },
-          { t:'Angel One SmartAPI', tag:['idea','Shortlist'], d:'India historical candles down to 1-minute.', facts:[['Cost','Free with account']] },
-          { t:'Upstox API v2', tag:['later','Backup'], d:'India REST + websocket.', facts:[['Cost','Free with account']] },
-          { t:'Zerodha Kite Connect', tag:['chk','Check price'], d:'Most mature India API.', facts:[['Cost','Paid (historical data add-on)']] }
-        ]},
-      { t:'US & execution', d:'US prices and how orders get placed.',
-        kids:[
-          { t:'Tiingo / yfinance', tag:['dec','Use'], d:'US daily prices.', facts:[['Cost','Free tier']] },
-          { t:'Interactive Brokers', tag:'later', d:'US execution and paper trading.', facts:[['Access','Account via LRS']] },
-          { t:'Vested', tag:['dec','Manual'], d:'US execution — manual, no retail API.', facts:[['Cost','Platform fees']] }
-        ]},
-      { t:'Data feeds', d:'Institutional and free public feeds.',
-        kids:[
-          { t:'Bloomberg (IIM lab)', tag:['chk','Book slots'], d:'Constituents, fundamentals, consensus and gap-filling.', facts:[['Cost','Institutional'],['Access','IIM Udaipur lab terminal']] },
-          { t:'NSE bhavcopy', tag:['dec','Fallback'], d:'Official EOD dump.', facts:[['Cost','Free, no auth']] },
-          { t:'SEC EDGAR + FRED', tag:['dec','Use'], d:'US fundamentals (EDGAR) and US macro (FRED).', facts:[['Cost','Free']] },
-          { t:'ccxt / Binance', tag:['dec','Use'], d:'Crypto prices.', facts:[['Cost','Free']] }
-        ]},
-      { t:'Compute & infra', d:'Where things run — local first, cloud later.',
-        kids:[
-          { t:'Local · M5 MacBook Air', tag:'dec', d:'Enough for the prototype: Polars + DuckDB + Parquet, LightGBM, MLflow. Fanless — long sweeps throttle.' },
-          { t:'Scheduling', tag:'idea', d:'GitHub Actions cron or GCP Cloud Scheduler → Cloud Run. India job ~16:30 IST, US job ~07:00 IST.' },
-          { t:'GCP scale-up', tag:'later', d:'BigQuery for the full universe, Vertex AI for hyperparameter sweeps / pipelines, GCS for Parquet. Or Colab for ad-hoc GPU.' },
-          { t:'Same feature code', tag:['dec','Principle'], d:'One feature module for backtest and live — prevents train/serve skew.' }
-        ]}
-    ]},
-
-  { t:'Strategy & Roadmap', d:'Experiments, principles, open checks and history.',
-    kids:[
-      { t:'Experiments', d:'What to test first.',
-        kids:[
-          { t:'Equity factors', d:'Single-market stock-selection strategies.',
-            kids:[
-              { t:'Exp 1 · 12-1 momentum', tag:'idea', d:'Top-10 NIFTY 50 by 12-month return (skip last month), monthly rebalance vs buy-and-hold.' },
-              { t:'Exp 2 · Quality + value', tag:'idea', d:'Rank on ROE, D/E, EV/EBITDA; sector-neutral; quarterly rebalance.' },
-              { t:'Exp 3 · Low-volatility', tag:'idea', d:'Lowest 1-year volatility names — target similar return with smaller drawdowns.' }
-            ]},
-          { t:'Allocation & regime', d:'Cross-asset and risk-switching ideas.',
-            kids:[
-              { t:'Exp 4 · Regime switch', tag:'idea', d:'De-risk to gold/cash when India VIX spikes or FII outflows persist.' },
-              { t:'Exp 5 · India + US mix in INR', tag:'idea', d:'Does US diversification beat NIFTY after FX spread, LRS lag, TCS and tax?' }
-            ]}
-        ]},
-      { t:'Principles', d:'Non-negotiables for every experiment.',
-        kids:[
-          { t:'Satellite allocation first', tag:'dec', d:'Core stays in index funds; the model runs on paper, then as a 5–10% satellite. Compare vs the index for 1–2 years before trusting it.' },
-          { t:'Tax-aware rebalancing', tag:['dec','Principle'], d:'India equity: STCG 20% (<12m), LTCG 12.5% above ₹1.25L. Foreign stocks: slab rate <24m, 12.5% after. Prefer holding winners past thresholds. Verify with a CA.',
-            facts:[['India STCG','20% (<12 months)'],['India LTCG','12.5% above ₹1.25L'],['Foreign','Slab <24m · 12.5% after']] },
-          { t:'Explainability is key', tag:['dec','Principle'], d:'Every signal ships with a plain-English rationale (top feature contributions via SHAP + an LLM summary). No black-box trades.' },
-          { t:'Honest validation', tag:['dec','Principle'], d:'Walk-forward only; one-day execution lag; costs + taxes + FX. Red flags: CAGR >25%, Sharpe >2, a smooth equity curve.' }
-        ]},
-      { t:'Open checks', d:'Things to verify or set up.',
-        kids:[
-          { t:'Access & accounts', d:'Unblock data and APIs.',
-            kids:[
-              { t:'WRDS / CRSP access at IIM Udaipur', tag:'chk', d:'Gold-standard survivorship-free US data.' },
-              { t:'Bloomberg booking & export policy', tag:'chk', d:'Download limits, USB/email export.' },
-              { t:'Broker account + API key', tag:['chk','To do'], d:'Fyers / Angel One — approval takes a few days.' },
-              { t:'Free-data pull (src/ingest)', tag:['chk','Run locally'], code:'python -m src.ingest.run all',
-                d:'Pipeline built and unit-tested offline; first live run happens on your Mac (market-data sites are blocked in the cloud sandbox). Pulls Parquet to data/raw/ and records lineage + validation in manifest.json.',
-                head:['Dataset','Source','Output'],
-                rows:[['Prices NIFTY 50 + S&P 100 (2010→)','Yahoo / yfinance','data/raw/prices/{nifty50,sp100}.parquet'],
-                      ['Macro: India VIX, indices, USD/INR, gold, oil, BTC/ETH','Yahoo','data/raw/macro/macro_daily.parquet'],
-                      ['Macro: US 3M T-bill, US 10Y, VIX, India 10Y (monthly)','FRED','data/raw/macro/macro_daily.parquet'],
-                      ['US fundamentals, point-in-time (all filed versions)','SEC EDGAR (needs SEC_USER_AGENT)','data/raw/fundamentals/us_edgar_facts.parquet'],
-                      ['Not yet automated: RBI repo rate, FII/DII flows, India fundamentals','NSE / RBI / Screener','TODO']],
-                plain:true,
-                facts:[['Caveat','Current constituents only → survivorship bias until Bloomberg historical constituents'],['First run','python -m src.ingest.run all --limit 5']] }
-            ]},
-          { t:'Later checks', d:'Needed before scaling or going live.',
-            kids:[
-              { t:'Bloomberg ↔ free-source reconciliation', tag:'later', d:'Overlap period to avoid feature drift when switching sources.' },
-              { t:'SEBI retail algo framework', tag:'later', d:'Rules to check before automating live orders.' }
-            ]}
-        ]},
-      { t:'Changelog', tag:['dec','Log'], d:'History of changes to this Data Laboratory (newest first).',
-        list:[
-          '<b>2026-10-15</b> — Data acquisition started: built the free-data ingestion pipeline (src/ingest: universe, prices, macro, US fundamentals via EDGAR, validation, manifest) with offline tests; new card Open checks → Access & accounts → Free-data pull.',
-          '<b>2026-10-15</b> — Added a browser-tab icon (favicon): dark-teal tile with a 2×2 grid, one green cell — mirrors the 2×2 drill-down.',
-          '<b>2026-10-15</b> — Light day theme only: removed the automatic dark-mode palette and the dark first card; all cards are light.',
-          '<b>2026-10-15</b> — Removed the landing-style hero (big title, intro text, stat chips, swirls) and the root “Start here” heading: the page is now a sub-page that opens straight on the 4 cards, with a compact top bar (logo + search). Universe / span / benchmark info remains under Universe & Scope.',
-          '<b>2026-10-15</b> — Restructured into a 2×2 drill-down hierarchy (max 4 cards per level) with zoom in/out animations, Back / Forward / Up / Home controls, breadcrumbs and global search. All previous content carried over; hero stat tiles became stat chips.',
-          '<b>2026-10-15</b> — Restyled with the Syntix-style theme (pale teal gradient, cream sections, dark-teal accents, green highlight, notched active chips). Content unchanged.',
-          '<b>2026-10-15</b> — Page created: scope, daily & quarterly fields, corporate actions, India/US macro, commodities, India signals, brokers, experiments, infra, open checks.'
-        ]}
-    ]}
- ]};
-
-/* ============================ engine ============================ */
-const TAGS={dec:'Decided',chk:'To check',idea:'Idea',later:'Later'};
-const $=s=>document.querySelector(s);
-const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const tagHTML=t=>{ if(!t) return ''; const [k,l]=Array.isArray(t)?t:[t,TAGS[t]]; return `<span class="tag t-${k}">${esc(l)}</span>`; };
-const nodeAt=p=>p.reduce((n,i)=>n.kids[i],DATA);
-const leafCount=n=>n.kids?n.kids.reduce((a,k)=>a+leafCount(k),0):1;
-const same=(a,b)=>a.length===b.length&&a.every((v,i)=>v===b[i]);
-const isPrefix=(a,b)=>a.length<b.length&&a.every((v,i)=>v===b[i]);
-const valid=p=>{ let n=DATA; for(const i of p){ if(!Number.isInteger(i)||!n.kids||!n.kids[i]) return false; n=n.kids[i]; } return true; };
-
-let cur=[], back=[], fwd=[], searching=false;
-
-function cardHTML(k){
-  const go='<span class="go" aria-hidden="true">→</span>';
-  if(k.kids){
-    const allLeaf=k.kids.every(c=>!c.kids), n=leafCount(k);
-    const eb=allLeaf?`<span class="count">${n} items</span>`:`<span class="count">${k.kids.length} groups · ${n} items</span>`;
-    return `<div class="eyebrow">${eb}</div><h3>${esc(k.t)}</h3><p>${esc(k.d||'')}</p>
-      <div class="chips">${k.kids.map(c=>`<span>${esc(c.t)}</span>`).join('')}</div>${go}`;
-  }
-  return `<div class="eyebrow">${tagHTML(k.tag)}${k.code?`<code>${esc(k.code)}</code>`:''}</div><h3>${esc(k.t)}</h3><p>${esc(k.d||'')}</p>${go}`;
-}
-
-function leafHTML(n,path){
-  const parent=nodeAt(path.slice(0,-1)), me=path[path.length-1];
-  let h=`<div class="detail"><div class="eyebrow">${tagHTML(n.tag)}${n.code?`<code>${esc(n.code)}</code>`:''}</div>
-    <h3>${esc(n.t)}</h3><p class="lead">${esc(n.d||'')}</p>`;
-  if(n.facts) h+=`<dl class="facts">${n.facts.map(([a,b])=>`<div><dt>${esc(a)}</dt><dd>${esc(b)}</dd></div>`).join('')}</dl>`;
-  if(n.rows) h+=`<div class="tw"><table>${n.head?`<tr>${n.head.map(x=>`<th>${esc(x)}</th>`).join('')}</tr>`:''}
-    ${n.rows.map(r=>`<tr>${r.map((c,i)=>`<td>${i===0&&!n.plain?`<code>${esc(c)}</code>`:esc(c)}</td>`).join('')}</tr>`).join('')}</table></div>`;
-  if(n.list) h+=`<ul class="log">${n.list.map(x=>`<li>${x}</li>`).join('')}</ul>`;
-  if(parent.kids.length>1) h+=`<div class="sibs">Also in ${esc(parent.t)}:
-    ${parent.kids.map((s,j)=>`<button data-sib="${j}" class="${j===me?'cur':''}">${esc(s.t)}</button>`).join('')}</div>`;
-  return h+'</div>';
-}
-
-function viewFor(path){
-  const n=nodeAt(path), v=document.createElement('div'); v.className='view';
-  const head = path.length ? `<div class="vhead"><h2>${esc(n.t)}</h2>${n.d&&n.kids?`<p>${esc(n.d)}</p>`:''}</div>`
-                           : '';
-  if(n.kids){
-    v.innerHTML=head+`<div class="grid4 n${n.kids.length}"></div>`;
-    const g=v.querySelector('.grid4');
-    n.kids.forEach((k,i)=>{
-      const b=document.createElement('button'); b.className='card'; b.dataset.idx=i;
-      b.style.setProperty('--d',(i*70+120)+'ms'); b.innerHTML=cardHTML(k);
-      b.addEventListener('click',()=>go([...path,i],{origin:b}));
-      g.appendChild(b);
-    });
-  } else {
-    v.innerHTML=leafHTML(n,path);
-    v.querySelectorAll('[data-sib]').forEach(btn=>btn.addEventListener('click',()=>{
-      const j=+btn.dataset.sib, me=path[path.length-1]; if(j===me) return;
-      go([...path.slice(0,-1),j],{dir:j>me?'next':'prev'});
-    }));
-  }
-  return v;
-}
-
-function go(path,opt={}){
-  const wasSearching=searching;
-  if(searching){ $('#q').value=''; searching=false; }
-  if(same(path,cur) && !wasSearching) return;
-  back.push(cur); fwd=[];
-  const prev=cur; cur=path; show(prev,wasSearching?{...opt,instant:true}:opt);
-}
-
-function show(prev,opt={}){
-  const stage=$('#stage');
-  stage.querySelectorAll('.leave').forEach(e=>e.remove());
-  const old=stage.querySelector('.view');
-  const nv=viewFor(cur);
-  const dir=opt.dir || (isPrefix(prev,cur)?'in' : isPrefix(cur,prev)?'out' : cur.length>=prev.length?'next':'prev');
-  if(old && !opt.instant){
-    old.classList.add('leave');
-    stage.appendChild(nv);
-    const sr=stage.getBoundingClientRect(); let ox='50%', oy='120px', ref=null;
-    if(dir==='in') ref=opt.origin;
-    if(dir==='out') ref=nv.querySelector(`.card[data-idx="${prev[cur.length]}"]`);
-    if(ref){ const r=ref.getBoundingClientRect(); ox=(r.left+r.width/2-sr.left)+'px'; oy=(r.top+r.height/2-sr.top)+'px'; }
-    old.style.transformOrigin=nv.style.transformOrigin=`${ox} ${oy}`;
-    old.classList.add('leave-'+dir); nv.classList.add('enter-'+dir);
-    setTimeout(()=>{ old.remove(); nv.classList.remove('enter-'+dir); nv.style.transformOrigin=''; },560);
-  } else { stage.innerHTML=''; stage.appendChild(nv); }
-  chrome();
-  const top=stage.getBoundingClientRect().top; if(top<0) window.scrollBy({top:top-80,behavior:'smooth'});
-}
-
-function chrome(){
-  $('#bk').disabled=!back.length; $('#fw').disabled=!fwd.length;
-  $('#up').disabled=!cur.length||searching; $('#home').disabled=!cur.length&&!searching;
-  const c=$('#crumbs'); c.innerHTML='';
-  const parts=[{t:'Home',p:[]}]; let n=DATA; cur.forEach((i,k)=>{ n=n.kids[i]; parts.push({t:n.t,p:cur.slice(0,k+1)}); });
-  if(searching) parts.push({t:'Search results',p:null});
-  parts.forEach((x,i)=>{
-    if(i) c.insertAdjacentHTML('beforeend','<span class="sep">›</span>');
-    if(i===parts.length-1){ c.insertAdjacentHTML('beforeend',`<span class="here">${esc(x.t)}</span>`); }
-    else { const a=document.createElement('a'); a.textContent=x.t; a.addEventListener('click',()=>go(x.p)); c.appendChild(a); }
+const cache = new Map();
+async function api(path, fresh=false){
+  if(!fresh && cache.has(path)) return cache.get(path);
+  const p = fetch(path, {headers:{Accept:'application/json'}}).then(async r => {
+    const body = await r.json().catch(() => ({}));
+    if(!r.ok) throw Object.assign(new Error(body.detail || r.statusText), {status:r.status});
+    return body;
   });
-  const d=$('#depth'); d.innerHTML='';
-  for(let i=0;i<5;i++) d.insertAdjacentHTML('beforeend',`<i class="${i<=cur.length?'on':''}"></i>`);
-  try{ history.replaceState(null,'','#/'+cur.join('/')); }catch(e){}
+  cache.set(path, p); p.catch(() => cache.delete(path));
+  return p;
 }
 
-function jump(target,fromStack,toStack){
-  if(!fromStack.length) return;
-  const wasSearching=searching; if(searching){ $('#q').value=''; searching=false; }
-  toStack.push(cur); const prev=cur; cur=fromStack.pop(); show(prev,{instant:wasSearching});
+const RUN_HELP = `python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt -r requirements-data.txt
+python -m src.ingest.run all --limit 5      # quick test
+python -m src.ingest.run all                # full pull
+uvicorn app.main:app --reload --port 8080   # then open /data-lab`;
+const emptyHTML = (msg, help=true) => `<div class="empty">${esc(msg)}${help?`<br><pre>${esc(RUN_HELP)}</pre>`:''}</div>`;
+
+/* ----------------------------------------------------------- routing */
+function parseHash(){
+  const h = location.hash.replace(/^#\/?/, ''); const [v, q=''] = h.split('?');
+  return { view: VIEWS.some(x => x.id===v) ? v : '', p: Object.fromEntries(new URLSearchParams(q)) };
 }
-$('#bk').onclick=()=>jump(null,back,fwd);
-$('#fw').onclick=()=>jump(null,fwd,back);
-$('#up').onclick=()=>{ if(cur.length) go(cur.slice(0,-1)); };
-$('#home').onclick=()=>{ if(searching){ $('#q').value=''; searching=false; show(cur,{instant:true}); return; } go([]); };
-document.addEventListener('keydown',e=>{
-  if(e.target.tagName==='INPUT'){ if(e.key==='Escape'){ e.target.value=''; e.target.dispatchEvent(new Event('input')); e.target.blur(); } return; }
-  if(e.key==='Escape'||e.key==='Backspace'){ e.preventDefault(); $('#up').click(); }
-  else if(e.altKey&&e.key==='ArrowLeft'){ e.preventDefault(); $('#bk').click(); }
-  else if(e.altKey&&e.key==='ArrowRight'){ e.preventDefault(); $('#fw').click(); }
-  else if(e.key==='/'){ e.preventDefault(); $('#q').focus(); }
-});
+function hashFor(view, p={}){
+  const q = new URLSearchParams(Object.entries(p).filter(([,v]) => v!=null && v!=='')).toString();
+  return '#/' + view + (q ? '?' + q.replace(/%2C/g, ',') : '');
+}
+let route = parseHash(), lastView = null;
+function nav(view, p={}, replace=false){
+  const h = hashFor(view, p);
+  if(replace) history.replaceState(null, '', h); else if(location.hash !== h) history.pushState(null, '', h);
+  route = parseHash(); render();
+}
+window.addEventListener('popstate', () => { route = parseHash(); render(); });
 
-/* search across the whole tree */
-const INDEX=[];
-(function walk(n,p,trail){
-  if(p.length) INDEX.push({p,n,trail,text:[n.t,n.d,n.code,Array.isArray(n.tag)?n.tag[1]:TAGS[n.tag],
-    (n.facts||[]).flat().join(' '),(n.rows||[]).flat().join(' '),(n.list||[]).join(' ').replace(/<[^>]+>/g,'')].join(' ').toLowerCase()});
-  (n.kids||[]).forEach((k,i)=>walk(k,[...p,i],p.length?[...trail,n.t]:trail));
-})(DATA,[],[]);
-
-$('#q').addEventListener('input',e=>{
-  const q=e.target.value.trim().toLowerCase(), stage=$('#stage');
-  if(!q){ if(searching){ searching=false; show(cur,{instant:true}); } return; }
-  searching=true;
-  const hits=INDEX.filter(x=>q.split(/\s+/).every(w=>x.text.includes(w)))
-                  .sort((a,b)=>(!!a.n.kids)-(!!b.n.kids)).slice(0,40);
-  const v=document.createElement('div'); v.className='view';
-  v.innerHTML=`<div class="vhead"><h2>${hits.length} match${hits.length===1?'':'es'}</h2><p>for “${esc(e.target.value.trim())}” — open one to jump straight in.</p></div><div class="results"></div>`;
-  const r=v.querySelector('.results');
-  if(!hits.length) r.innerHTML='<div class="empty">Nothing found — try another word.</div>';
-  hits.forEach((h,i)=>{
-    const b=document.createElement('button'); b.className='res'; b.style.setProperty('--d',Math.min(i,12)*25+'ms');
-    b.innerHTML=`<span><small>${esc(['Home',...h.trail].join(' › '))}</small><b>${esc(h.n.t)}</b></span>${h.n.kids?`<span class="tag t-later">${leafCount(h.n)} items</span>`:tagHTML(h.n.tag)}`;
-    b.addEventListener('click',()=>go(h.p));
-    r.appendChild(b);
+/* ----------------------------------------------------------- chart (hand-drawn SVG) */
+function niceTicks(min, max, n=5){
+  if(min===max){ min-=1; max+=1; }
+  const span = max-min, step0 = span/n, mag = 10**Math.floor(Math.log10(step0));
+  const step = [1,2,2.5,5,10].map(m => m*mag).find(s => span/s <= n) || mag*10;
+  const t = []; for(let v=Math.ceil(min/step)*step; v<=max+1e-9; v+=step) t.push(+v.toFixed(10));
+  return t;
+}
+/* series: [{name, color, pts:[[Date, value]]}]; opts: {height, fmt, bars:[[Date, v]]} */
+function drawChart(el, series, opts={}){
+  const W = Math.max(320, el.clientWidth), H = opts.height || 300, bH = opts.bars ? 60 : 0;
+  const m = {l:56, r:14, t:10, b:24 + (bH ? bH + 22 : 0)};
+  const all = series.flatMap(s => s.pts).filter(p => p[1]!=null);
+  if(!all.length){ el.innerHTML = emptyHTML('No points in this window.', false); return; }
+  const x0 = Math.min(...all.map(p => +p[0])), x1 = Math.max(...all.map(p => +p[0]));
+  let y0 = Math.min(...all.map(p => p[1])), y1 = Math.max(...all.map(p => p[1]));
+  const pad = (y1-y0)*0.06 || Math.abs(y1)*0.05 || 1; y0 -= pad; y1 += pad;
+  const yt = niceTicks(y0, y1, 5); y0 = Math.min(y0, yt[0]); y1 = Math.max(y1, yt[yt.length-1]);
+  const iw = W-m.l-m.r, ih = H-m.t-m.b;
+  const X = t => m.l + (x1===x0 ? iw/2 : (t-x0)/(x1-x0)*iw), Y = v => m.t + ih - (v-y0)/(y1-y0)*ih;
+  const fmt = opts.fmt || (v => nf(v, Math.abs(v)<10 ? 2 : 0));
+  // x ticks: years (or months for short windows)
+  const spanY = (x1-x0)/(365.25*864e5), xt = [];
+  if(spanY > 2){ const st = spanY>12?2:1; for(let y=new Date(x0).getFullYear()+1; y<=new Date(x1).getFullYear(); y+=st) xt.push([+new Date(y,0,1), String(y)]); }
+  else { const d=new Date(x0); d.setDate(1); d.setMonth(d.getMonth()+1); const st=spanY>1?3:1;
+    while(+d<=x1){ xt.push([+d, d.toLocaleString('en',{month:'short'})+(d.getMonth()===0?" '"+String(d.getFullYear()).slice(2):'')]); d.setMonth(d.getMonth()+st); } }
+  let g = `<g class="grid">${yt.map(v => `<line x1="${m.l}" x2="${W-m.r}" y1="${Y(v)}" y2="${Y(v)}"/>`).join('')}</g>`;
+  g += `<g class="axis">${yt.map(v => `<text x="${m.l-8}" y="${Y(v)+4}" text-anchor="end">${esc(fmt(v))}</text>`).join('')}
+        ${xt.map(([t,l]) => `<text x="${X(t)}" y="${m.t+ih+16}" text-anchor="middle">${esc(l)}</text>`).join('')}</g>`;
+  if(opts.base!=null && opts.base>y0 && opts.base<y1) g += `<line x1="${m.l}" x2="${W-m.r}" y1="${Y(opts.base)}" y2="${Y(opts.base)}" stroke="var(--teal-mid)" stroke-dasharray="4 4"/>`;
+  if(opts.bars){
+    const vmax = Math.max(...opts.bars.map(b => b[1]||0)) || 1, by = H-bH-4, bw = Math.max(1, iw/opts.bars.length*0.8);
+    g += `<g fill="var(--teal-mid)">${opts.bars.map(([t,v]) => `<rect x="${X(+t)-bw/2}" y="${by+bH-(v||0)/vmax*bH}" width="${bw}" height="${(v||0)/vmax*bH}"/>`).join('')}</g>
+          <text class="axis" x="${m.l-8}" y="${by+10}" text-anchor="end" font-size="11" fill="var(--muted)">${esc(big(vmax))}</text>
+          <text x="${m.l}" y="${by-2}" font-size="10.5" fill="var(--muted)" font-weight="700" letter-spacing=".06em">VOLUME</text>`;
+  }
+  series.forEach(s => {
+    let d = '', pen = false;
+    s.pts.forEach(([t,v]) => { if(v==null){ pen=false; return; } d += (pen?'L':'M') + X(+t).toFixed(1) + ' ' + Y(v).toFixed(1); pen = true; });
+    const id = 'g'+Math.random().toString(36).slice(2,8), last = s.pts.filter(p => p[1]!=null).pop();
+    if(series.length===1 && !opts.noFill){
+      const f = s.pts.filter(p => p[1]!=null);
+      g += `<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${s.color}" stop-opacity=".18"/><stop offset="1" stop-color="${s.color}" stop-opacity="0"/></linearGradient></defs>
+            <path d="M${X(+f[0][0])} ${m.t+ih} ${f.map(([t,v]) => 'L'+X(+t).toFixed(1)+' '+Y(v).toFixed(1)).join(' ')} L${X(+f[f.length-1][0])} ${m.t+ih}Z" fill="url(#${id})"/>`;
+    }
+    g += `<path d="${d}" fill="none" stroke="${s.color}" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>`;
+    if(last) g += `<circle cx="${X(+last[0])}" cy="${Y(last[1])}" r="3.2" fill="${s.color}"/>`;
   });
-  stage.innerHTML=''; stage.appendChild(v); chrome();
-});
+  g += `<line class="cross" x1="0" x2="0" y1="${m.t}" y2="${m.t+ih}" stroke="var(--ink)" stroke-opacity=".25" style="display:none"/>
+        <g class="dots"></g><rect x="${m.l}" y="${m.t}" width="${iw}" height="${H-m.t-4}" fill="transparent"/>`;
+  el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" height="${H}" role="img" aria-label="${esc(series.map(s=>s.name).join(', '))} chart">${g}</svg><div class="tip"></div>`;
+  // hover: nearest date on the first series
+  const svg = el.querySelector('svg'), tip = el.querySelector('.tip'), cross = svg.querySelector('.cross'), dots = svg.querySelector('.dots');
+  const ref = series[0].pts;
+  const near = (pts, t) => { let lo=0, hi=pts.length-1; while(lo<hi){ const mid=(lo+hi)>>1; if(+pts[mid][0]<t) lo=mid+1; else hi=mid; }
+    return lo>0 && Math.abs(+pts[lo-1][0]-t) < Math.abs(+pts[lo][0]-t) ? pts[lo-1] : pts[lo]; };
+  svg.addEventListener('mousemove', e => {
+    const r = svg.getBoundingClientRect(), px = (e.clientX-r.left)*(W/r.width);
+    const t = x0 + (px-m.l)/iw*(x1-x0), p = near(ref, t); if(!p) return;
+    const cx = X(+p[0]); cross.setAttribute('x1', cx); cross.setAttribute('x2', cx); cross.style.display = '';
+    const rows = series.map(s => [s, near(s.pts, +p[0])]);
+    dots.innerHTML = rows.filter(([,q]) => q && q[1]!=null).map(([s,q]) => `<circle cx="${X(+q[0])}" cy="${Y(q[1])}" r="4" fill="${s.color}" stroke="#fff" stroke-width="1.5"/>`).join('');
+    const bar = opts.bars ? near(opts.bars, +p[0]) : null;
+    tip.innerHTML = `<b>${p[0].toISOString().slice(0,10)}</b><br>` + rows.map(([s,q]) => `<i style="background:${s.color}"></i>${esc(s.name)}: ${q && q[1]!=null ? esc(fmt(q[1])) : '—'}`).join('<br>')
+      + (bar ? `<br>Volume: ${big(bar[1])}` : '');
+    tip.style.opacity = 1;
+    const tx = cx/W*r.width; tip.style.left = Math.min(r.width - tip.offsetWidth - 4, Math.max(4, tx + 14)) + 'px'; tip.style.top = '8px';
+  });
+  svg.addEventListener('mouseleave', () => { tip.style.opacity = 0; cross.style.display = 'none'; dots.innerHTML = ''; });
+}
+function sparkSVG(pts, color='var(--c1)'){
+  const v = pts.map(p => p[1]).filter(x => x!=null); if(v.length<2) return '';
+  const lo = Math.min(...v), hi = Math.max(...v), W = 300, H = 46;
+  const d = v.map((y,i) => (i?'L':'M') + (i/(v.length-1)*W).toFixed(1) + ' ' + (H-3-(y-lo)/((hi-lo)||1)*(H-6)).toFixed(1)).join('');
+  return `<svg class="spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><path d="${d}" fill="none" stroke="${color}" stroke-width="2" vector-effect="non-scaling-stroke"/></svg>`;
+}
+const toPts = (rows, key) => rows.map(r => [new Date(r.date + 'T00:00:00Z'), r[key]]);
+let redraw = null;
+window.addEventListener('resize', () => { clearTimeout(window.__rz); window.__rz = setTimeout(() => redraw && redraw(), 150); });
 
-/* boot from #/a/b/c */
-(function(){
-  const h=location.hash.replace(/^#\/?/,''); const p=h?h.split('/').map(Number):[];
-  cur=valid(p)?p:[]; show([],{instant:true});
-})();
+/* ----------------------------------------------------------- shell */
+function crumbs(){
+  const v = VIEWS.find(x => x.id===route.view);
+  $('#crumbs').innerHTML = `<a data-home>Data Lab</a>` + (v ? `<span class="sep">›</span><span class="here">${esc(v.t)}</span>` : '');
+  $('#crumbs [data-home]').onclick = () => nav('');
+  $('#bk').disabled = !route.view; $('#home').disabled = !route.view;
+}
+function render(){
+  crumbs(); redraw = null; LOC = 'en-IN';
+  const st = $('#stage'), v = route.view, cls = !lastView && v ? 'zin' : lastView && !v ? 'zout' : '';
+  st.innerHTML = ''; const view = document.createElement('div'); if(cls && lastView!==v) view.className = cls; st.appendChild(view);
+  lastView = v;
+  ({'':renderRoot, overview:renderOverview, prices:renderPrices, macro:renderMacro, universe:renderUniverse})[v](view);
+}
+$('#bk').onclick = () => history.length > 1 ? history.back() : nav('');
+$('#home').onclick = () => nav('');
+$('#reload').onclick = () => { cache.clear(); loadStatus(); render(); };
+document.addEventListener('keydown', e => {
+  if(['INPUT','SELECT','TEXTAREA'].includes(document.activeElement.tagName)) return;
+  if(e.key==='Escape' || e.key==='Backspace'){ if(route.view){ e.preventDefault(); nav(''); } }
+  if(e.altKey && e.key==='ArrowLeft'){ e.preventDefault(); history.back(); }
+  if(e.altKey && e.key==='ArrowRight'){ e.preventDefault(); history.forward(); }
+});
+async function loadStatus(){
+  if(location.protocol==='file:'){ $('#status').innerHTML = 'Open via the app (<b>uvicorn</b>) to load data'; return; }
+  try{
+    const m = await api('/api/data/manifest'); const ds = Object.values(m.manifest);
+    const last = ds.map(d => d.fetched_at).filter(Boolean).sort().pop();
+    $('#status').innerHTML = ds.length ? `<b>${ds.length}</b> datasets · last pull <b>${ago(last)}</b>` : 'No data pulled yet';
+  }catch(e){ $('#status').textContent = 'API not reachable'; }
+}
+
+/* ----------------------------------------------------------- root: 4 cards */
+async function renderRoot(el){
+  el.innerHTML = `<div class="grid4">${VIEWS.map((v,i) => `<button class="card" data-v="${v.id}" style="--d:${i*70+80}ms">
+      <div class="eyebrow">${esc(['Health','Stocks','Backdrop','Coverage'][i])}</div><h3>${esc(v.t)}</h3><p>${esc(v.d)}</p>
+      <div class="live" id="live-${v.id}"></div><span class="go" aria-hidden="true">→</span></button>`).join('')}</div>`;
+  el.querySelectorAll('.card').forEach(b => b.onclick = () => nav(b.dataset.v));
+  if(location.protocol==='file:'){ $('#live-overview').innerHTML = emptyHTML('This page reads data through the app API — open it via uvicorn.'); return; }
+  const live = (id, html) => { const n = document.getElementById('live-'+id); if(n) n.innerHTML = html; };
+  api('/api/data/manifest').then(m => {
+    const ds = Object.values(m.manifest), issues = ds.reduce((a,d) => a + ((d.validation||{}).issues||[]).length, 0);
+    const miss = ds.reduce((a,d) => a + (d.missing_tickers||d.missing_series||[]).length, 0);
+    const rows = ds.reduce((a,d) => a + ((d.validation||{}).rows || d.rows || 0), 0);
+    live('overview', ds.length ? `<div class="big">${big(rows)}<small>rows in ${ds.length} datasets</small></div>
+      <div class="chips">${issues||miss ? `<span class="tag t-warn">${issues} issues · ${miss} missing</span>` : '<span class="tag t-ok">No validation issues</span>'}<span>${m.files.length} files</span></div>`
+      : '<div class="chips"><span class="tag t-warn">No data yet</span></div>');
+  }).catch(() => live('overview', '<div class="chips"><span class="tag t-bad">API not reachable</span></div>'));
+  api('/api/data/prices/nifty50').then(r => live('prices', `<div class="big">${r.tickers.length}<small>NIFTY 50 stocks with prices</small></div>`)).catch(() => {});
+  api('/api/data/macro?series=nifty50&start=' + startFor('5y')).then(r => {
+    const s = r.series.nifty50; if(!s.rows) return;
+    live('macro', `<div class="big">${nf(s.stats.last,0)}<small>NIFTY 50 · 5Y ${pct(s.stats.pct_change)}</small></div>${sparkSVG(toPts(s.points,'value'))}`);
+  }).catch(() => {});
+  Promise.allSettled(['nifty50','sp100'].map(k => api('/api/data/universe/'+k))).then(rs => {
+    const ok = rs.filter(r => r.status==='fulfilled').map(r => r.value); if(!ok.length) return;
+    live('universe', `<div class="chips">${ok.map(u => `<span>${esc(MARKET_LABEL[u.market])}: ${u.with_prices}/${u.count} pulled</span>`).join('')}</div>`);
+  });
+}
+
+/* ----------------------------------------------------------- overview */
+async function renderOverview(el){
+  el.innerHTML = `<div class="vhead"><h2>Overview</h2><p>Everything in <code>data/raw</code>, read from <code>manifest.json</code> (written on every ingest run).</p></div><div id="ov"><div class="skel"></div></div>`;
+  let m; try{ m = await api('/api/data/manifest'); }catch(e){ $('#ov').innerHTML = emptyHTML('API not reachable: ' + e.message); return; }
+  const ds = Object.entries(m.manifest);
+  if(!ds.length){ $('#ov').innerHTML = `<div class="panel">${emptyHTML('No manifest.json found in ' + m.data_dir + '.')}</div>`; return; }
+  const health = d => { const v = d.validation||{}, iss = (v.issues||[]).length, miss = (d.missing_tickers||d.missing_series||[]).length;
+    return iss ? `<span class="tag t-warn">${iss} issue${iss>1?'s':''}</span>` : miss ? `<span class="tag t-warn">${miss} missing</span>` : '<span class="tag t-ok">Clean</span>'; };
+  const link = k => k.startsWith('prices/') ? `#/prices?m=${k.split('/')[1]}` : k.startsWith('macro/') ? '#/macro' : '';
+  let h = `<div class="panel"><h4>Datasets</h4><div class="tw"><table><thead><tr><th>Dataset</th><th>Source</th><th class="n">Rows</th><th class="n">Items</th><th>From → to</th><th>Health</th><th>Pulled</th></tr></thead><tbody>`;
+  for(const [k,d] of ds){
+    const v = {...(d.validation||{})}, items = v.tickers ?? v.series ?? d.tickers ?? d.requested ?? '—';
+    if(!v.min_date && v.by_series){ const b = Object.values(v.by_series); v.min_date = b.map(x => x.from).sort()[0]; v.max_date = b.map(x => x.to).sort().pop(); }
+    h += `<tr class="${link(k)?'click':''}" data-href="${link(k)}"><td><b>${esc(k)}</b></td><td>${esc(d.source||'')}</td><td class="n">${nf(v.rows ?? d.rows,0)}</td><td class="n">${esc(items)}</td>
+      <td class="nw">${esc(v.min_date||'')}${v.min_date?' → ':''}${esc(v.max_date||'')}</td><td>${health(d)}</td><td title="${esc(d.fetched_at||'')}">${ago(d.fetched_at)}</td></tr>`;
+  }
+  h += `</tbody></table></div></div>`;
+  // problems & caveats
+  const notes = [];
+  for(const [k,d] of ds){
+    (d.missing_tickers||[]).length && notes.push(`<b>${esc(k)}</b>: missing tickers ${esc(d.missing_tickers.join(', '))}`);
+    (d.missing_series||[]).length && notes.push(`<b>${esc(k)}</b>: missing series ${esc(d.missing_series.join(', '))}`);
+    ((d.validation||{}).issues||[]).forEach(i => notes.push(`<b>${esc(k)}</b>: ${esc(i)}`));
+    d.universe_caveat && notes.push(`<b>${esc(k)}</b>: ${esc(d.universe_caveat)}`);
+    d.note && notes.push(`<b>${esc(k)}</b>: ${esc(d.note)}`);
+  }
+  if(!m.manifest['fundamentals/us_edgar_facts']) notes.push('<b>fundamentals</b>: not pulled yet — set <code>SEC_USER_AGENT="Your Name you@example.com"</code> and run <code>python -m src.ingest.run fundamentals</code>');
+  const macro = m.manifest['macro/macro_daily'];
+  const series = macro && (macro.validation||{}).by_series ? Object.entries(macro.validation.by_series) : [];
+  h += `<div class="two"><div class="panel"><h4>Problems & caveats</h4>${notes.length ? `<ul style="margin:0;padding-left:18px">${notes.map(n => `<li style="margin-bottom:6px">${n}</li>`).join('')}</ul>` : '<p class="hint">Nothing flagged.</p>'}</div>
+        <div class="panel"><h4>Files on disk</h4><div class="tw"><table><thead><tr><th>File</th><th class="n">Size</th></tr></thead><tbody>${m.files.map(f => `<tr><td><code>${esc(f.path)}</code></td><td class="n">${bytes(f.bytes)}</td></tr>`).join('')}</tbody></table></div></div></div>`;
+  if(series.length){
+    const today = new Date();
+    h += `<div class="panel"><h4>Macro series coverage</h4><div class="tw"><table><thead><tr><th>Series</th><th>From</th><th>To</th><th class="n">Rows</th><th>Freshness</th></tr></thead><tbody>
+      ${series.map(([s,r]) => { const lag = Math.round((today - new Date(r.to))/864e5);
+        return `<tr class="click" data-href="#/macro?s=${encodeURIComponent(s)}"><td><b>${esc(label(s))}</b> <code>${esc(s)}</code></td><td>${esc(r.from)}</td><td>${esc(r.to)}</td><td class="n">${nf(r.n,0)}</td>
+        <td>${lag<=5 ? '<span class="tag t-ok">Fresh</span>' : s.includes('monthly') && lag<130 ? `<span class="tag t-info">Monthly · ${lag} d</span>` : `<span class="tag t-warn">${lag} days old</span>`}</td></tr>`; }).join('')}</tbody></table></div></div>`;
+  }
+  $('#ov').innerHTML = h;
+  $('#ov').querySelectorAll('tr[data-href]').forEach(tr => { if(tr.dataset.href) tr.onclick = () => { location.hash = tr.dataset.href; }; });
+}
+
+/* ----------------------------------------------------------- prices */
+async function renderPrices(el){
+  const p = route.p, market = MARKET_LABEL[p.m] ? p.m : 'nifty50', range = p.r || '5y', field = p.f || 'adj_close';
+  LOC = market==='sp100' ? 'en-US' : 'en-IN';
+  el.innerHTML = `<div class="vhead"><h2>Prices</h2><p>Daily prices from Yahoo (yfinance). One stock: price + volume. Two or more: rebased to 100 at the window start.</p></div>
+    <div class="panel"><div class="controls">
+      <div class="seg" id="mk">${Object.entries(MARKET_LABEL).map(([k,l]) => `<button data-k="${k}" class="${k===market?'on':''}">${l}</button>`).join('')}</div>
+      <input class="inp" id="tk" list="tklist" placeholder="Add a stock (max 4)…" autocomplete="off" style="min-width:200px"><datalist id="tklist"></datalist>
+      <div class="seg" id="rg">${RANGES.map(([k,l]) => `<button data-k="${k}" class="${k===range?'on':''}">${l}</button>`).join('')}</div>
+      <div class="seg" id="fd"><button data-k="adj_close" class="${field==='adj_close'?'on':''}" title="Adjusted for splits and dividends — use for returns">Adj close</button><button data-k="close" class="${field==='close'?'on':''}" title="Raw traded price (≈ Bloomberg PX_LAST)">Close</button></div>
+    </div><div class="picked" id="picked"></div></div>
+    <div id="pbody"><div class="panel"><div class="skel"></div></div></div>`;
+  const set = (o, replace) => nav('prices', {m:market, t:p.t, r:range, f:field, ...o}, replace);
+  el.querySelectorAll('#mk button').forEach(b => b.onclick = () => set({m:b.dataset.k, t:''}));
+  el.querySelectorAll('#rg button').forEach(b => b.onclick = () => set({r:b.dataset.k}, true));
+  el.querySelectorAll('#fd button').forEach(b => b.onclick = () => set({f:b.dataset.k}, true));
+  let summary; try{ summary = await api('/api/data/prices/' + market); }
+  catch(e){ $('#pbody').innerHTML = `<div class="panel">${emptyHTML(e.status===404 ? `No ${MARKET_LABEL[market]} prices yet.` : 'API error: ' + e.message)}</div>`; return; }
+  const known = summary.tickers.map(x => x.ticker);
+  $('#tklist').innerHTML = known.map(t => `<option value="${esc(t)}">`).join('');
+  let picked = (p.t ? p.t.split(',') : []).filter(t => known.includes(t)).slice(0,4);
+  if(!picked.length){ picked = known.slice(0,1); set({t:picked.join(',')}, true); return; }
+  $('#picked').innerHTML = picked.map((t,i) => `<span class="pill"><i style="background:${COLORS[i]}"></i>${esc(t)}<button data-x="${esc(t)}" title="Remove">×</button></span>`).join('')
+    + `<span class="hint">${known.length} stocks available · type to add</span>`;
+  $('#picked').querySelectorAll('[data-x]').forEach(b => b.onclick = () => { const rest = picked.filter(t => t!==b.dataset.x); set({t:(rest.length?rest:known.slice(0,1)).join(',')}); });
+  $('#tk').onchange = e => { const t = e.target.value.trim().toUpperCase(), hit = known.find(k => k.toUpperCase()===t || k.toUpperCase()===t+'.NS');
+    if(hit && !picked.includes(hit)){ if(picked.length>=4) picked.shift(); set({t:[...picked, hit].join(',')}); } e.target.value=''; };
+  let r; try{ r = await api(`/api/data/prices/${market}?tickers=${encodeURIComponent(picked.join(','))}&start=${startFor(range)}`); }
+  catch(e){ $('#pbody').innerHTML = `<div class="panel">${emptyHTML('API error: ' + e.message, false)}</div>`; return; }
+  const one = picked.length===1, S = r.series;
+  // stats
+  const statRow = t => { const s = S[t].stats||{}; return `<dl class="stats">
+      <div><dt>${esc(t)} · last</dt><dd>${nf(s.last)}</dd></div><div><dt>Return (${esc(range)})</dt><dd>${pct(s.total_return)}</dd></div>
+      <div><dt>CAGR</dt><dd>${pct(s.cagr)}</dd></div><div><dt>Volatility (ann.)</dt><dd>${s.ann_vol==null?'—':(s.ann_vol*100).toFixed(1)+'%'}</dd></div>
+      <div><dt>Max drawdown</dt><dd>${pct(s.max_drawdown)}</dd></div><div><dt>Days</dt><dd>${nf(S[t].rows,0)}</dd></div></dl>`; };
+  const cmpTable = `<div class="tw" style="margin-bottom:14px"><table><thead><tr><th>Stock</th><th class="n">Last</th><th class="n">Return</th><th class="n">CAGR</th><th class="n">Vol (ann.)</th><th class="n">Max DD</th><th>From → to</th></tr></thead><tbody>
+      ${picked.map((t,i) => { const s = S[t].stats||{}; return `<tr><td><span class="pill" style="padding:2px 10px"><i style="background:${COLORS[i]}"></i>${esc(t)}</span></td><td class="n">${nf(s.last)}</td><td class="n">${pct(s.total_return)}</td><td class="n">${pct(s.cagr)}</td>
+      <td class="n">${s.ann_vol==null?'—':(s.ann_vol*100).toFixed(1)+'%'}</td><td class="n">${pct(s.max_drawdown)}</td><td>${esc(S[t].from||'')} → ${esc(S[t].to||'')}</td></tr>`; }).join('')}</tbody></table></div>`;
+  const t0 = picked[0], tail = S[t0].tail;
+  $('#pbody').innerHTML = `<div class="panel">${one ? statRow(t0) : cmpTable}<div class="chart" id="pc"></div>
+      <p class="hint" style="margin:8px 0 0">${one ? `${field==='adj_close'?'Adjusted close (splits + dividends)':'Close (raw traded price)'} · ` : 'Rebased to 100 at window start · '}stats use adjusted close on every day; the line is thinned to ≤1,500 points.</p></div>
+    <div class="panel"><h4>Last ${tail.length} days · ${esc(t0)}</h4><div class="tw"><table><thead><tr><th>Date</th><th class="n">Open</th><th class="n">High</th><th class="n">Low</th><th class="n">Close</th><th class="n">Adj close</th><th class="n">Volume</th></tr></thead><tbody>
+      ${tail.map(x => `<tr><td class="nw">${esc(x.date)}</td><td class="n">${nf(x.open)}</td><td class="n">${nf(x.high)}</td><td class="n">${nf(x.low)}</td><td class="n"><b>${nf(x.close)}</b></td><td class="n">${nf(x.adj_close)}</td><td class="n">${big(x.volume)}</td></tr>`).join('')}</tbody></table></div></div>`;
+  const draw = () => {
+    if(one) drawChart($('#pc'), [{name:t0, color:COLORS[0], pts:toPts(S[t0].points, field)}], {height:360, bars:toPts(S[t0].points,'volume')});
+    else drawChart($('#pc'), picked.map((t,i) => { const pts = toPts(S[t].points, field), b = (pts.find(q => q[1]!=null)||[])[1];
+      return {name:t, color:COLORS[i], pts:pts.map(([d,v]) => [d, v==null||!b ? null : v/b*100])}; }), {height:360, base:100, fmt:v => nf(v,0)});
+  };
+  draw(); redraw = draw;
+}
+
+/* ----------------------------------------------------------- macro */
+async function renderMacro(el){
+  const p = route.p, range = p.r || '5y';
+  el.innerHTML = `<div class="vhead"><h2>Macro</h2><p>Market backdrop from Yahoo and FRED. Pick up to 4 series; mixed units are rebased to 100.</p></div>
+    <div class="panel"><div class="controls">
+      <select id="ms"><option value="">+ Add a series…</option></select>
+      <div class="seg" id="rg">${RANGES.map(([k,l]) => `<button data-k="${k}" class="${k===range?'on':''}">${l}</button>`).join('')}</div>
+    </div><div class="picked" id="picked"></div></div>
+    <div id="mbody"><div class="panel"><div class="skel"></div></div></div>`;
+  let sum; try{ sum = await api('/api/data/macro'); }
+  catch(e){ $('#mbody').innerHTML = `<div class="panel">${emptyHTML(e.status===404 ? 'No macro data yet.' : 'API error: ' + e.message)}</div>`; return; }
+  const known = sum.series.map(s => s.series);
+  let picked = (p.s ? p.s.split(',') : []).filter(s => known.includes(s)).slice(0,4);
+  const set = (o, replace) => nav('macro', {s:picked.join(','), r:range, ...o}, replace);
+  if(!picked.length){ picked = [known.includes('india_vix') ? 'india_vix' : known[0]]; set({}, true); return; }
+  el.querySelectorAll('#rg button').forEach(b => b.onclick = () => set({r:b.dataset.k}, true));
+  $('#ms').innerHTML += sum.series.filter(s => !picked.includes(s.series)).map(s => `<option value="${esc(s.series)}">${esc(label(s.series))}</option>`).join('');
+  $('#ms').onchange = e => { if(!e.target.value) return; const nx = [...picked, e.target.value]; if(nx.length>4) nx.shift(); set({s:nx.join(',')}); };
+  $('#picked').innerHTML = picked.map((s,i) => `<span class="pill"><i style="background:${COLORS[i]}"></i>${esc(label(s))}<button data-x="${esc(s)}" title="Remove">×</button></span>`).join('');
+  $('#picked').querySelectorAll('[data-x]').forEach(b => b.onclick = () => { const rest = picked.filter(s => s!==b.dataset.x); set({s:(rest.length?rest:[known[0]]).join(',')}); });
+  let r; try{ r = await api(`/api/data/macro?series=${encodeURIComponent(picked.join(','))}&start=${startFor(range)}`); }
+  catch(e){ $('#mbody').innerHTML = `<div class="panel">${emptyHTML('API error: ' + e.message, false)}</div>`; return; }
+  LOC = picked.every(s => INDIA_SERIES.test(s)) ? 'en-IN' : 'en-US';
+  const S = r.series, one = picked.length===1, src = Object.fromEntries(sum.series.map(s => [s.series, s.source]));
+  const isRate = s => /10y|tbill|vix/.test(s);
+  $('#mbody').innerHTML = `<div class="panel"><div class="tw" style="margin-bottom:14px"><table><thead><tr><th>Series</th><th>Source</th><th class="n">Last</th><th class="n">Change (${esc(range)})</th><th class="n">Min</th><th class="n">Max</th><th>From → to</th></tr></thead><tbody>
+      ${picked.map((s,i) => { const x = S[s].stats||{}; return `<tr><td><span class="pill" style="padding:2px 10px"><i style="background:${COLORS[i]}"></i>${esc(label(s))}</span></td><td>${esc(src[s]||'')}</td>
+      <td class="n"><b>${nf(x.last)}</b></td><td class="n">${isRate(s) ? (x.change==null?'—':`<span class="${x.change>=0?'pos':'neg'}">${x.change>=0?'+':''}${nf(x.change)}</span> pts`) : pct(x.pct_change)}</td>
+      <td class="n">${nf(x.min)}</td><td class="n">${nf(x.max)}</td><td>${esc(S[s].from||'—')} → ${esc(S[s].to||'—')}</td></tr>`; }).join('')}</tbody></table></div>
+      <div class="chart" id="mc"></div><p class="hint" style="margin:8px 0 0">${one ? 'Raw values' : 'Rebased to 100 at window start'} · rates, yields and VIX change shown in points; prices in %.</p></div>
+    <div class="panel"><h4>Last ${S[picked[0]].tail.length} observations · ${esc(label(picked[0]))}</h4><div class="tw"><table><thead><tr><th>Date</th><th class="n">Value</th></tr></thead><tbody>
+      ${S[picked[0]].tail.map(x => `<tr><td>${esc(x.date)}</td><td class="n">${nf(x.value)}</td></tr>`).join('')}</tbody></table></div></div>`;
+  const draw = () => {
+    if(one) drawChart($('#mc'), [{name:label(picked[0]), color:COLORS[0], pts:toPts(S[picked[0]].points,'value')}], {height:340});
+    else drawChart($('#mc'), picked.map((s,i) => { const pts = toPts(S[s].points,'value'), b = (pts.find(q => q[1]!=null)||[])[1];
+      return {name:label(s), color:COLORS[i], pts:pts.map(([d,v]) => [d, v==null||!b ? null : v/b*100])}; }), {height:340, base:100, fmt:v => nf(v,0)});
+  };
+  draw(); redraw = draw;
+}
+
+/* ----------------------------------------------------------- universe */
+async function renderUniverse(el){
+  const market = MARKET_LABEL[route.p.m] ? route.p.m : 'nifty50';
+  el.innerHTML = `<div class="vhead"><h2>Universe</h2><p>Constituent lists we pull (current members only — survivorship bias until Bloomberg historical constituents). Click a stock to chart it.</p></div>
+    <div class="panel"><div class="controls">
+      <div class="seg" id="mk">${Object.entries(MARKET_LABEL).map(([k,l]) => `<button data-k="${k}" class="${k===market?'on':''}">${l}</button>`).join('')}</div>
+      <input class="inp" id="flt" type="search" placeholder="Filter by ticker, name or sector…" style="min-width:240px">
+      <div class="seg" id="only"><button data-k="all" class="on">All</button><button data-k="yes">With prices</button><button data-k="no">Not pulled</button></div>
+      <span class="hint" id="cnt"></span>
+    </div><div id="ubody"><div class="skel"></div></div></div>`;
+  el.querySelectorAll('#mk button').forEach(b => b.onclick = () => nav('universe', {m:b.dataset.k}));
+  let u; try{ u = await api('/api/data/universe/' + market); }
+  catch(e){ $('#ubody').innerHTML = emptyHTML(e.status===404 ? `No ${MARKET_LABEL[market]} universe snapshot yet.` : 'API error: ' + e.message); return; }
+  const sectors = {}; u.rows.forEach(r => { const k = r.sector || '—'; sectors[k] = (sectors[k]||0) + 1; });
+  let only = 'all';
+  const paint = () => {
+    const q = $('#flt').value.trim().toLowerCase();
+    const rows = u.rows.filter(r => (only==='all' || (only==='yes') === r.has_prices) && (!q || [r.ticker, r.name, r.sector].join(' ').toLowerCase().includes(q)));
+    $('#cnt').textContent = `${rows.length} of ${u.count} · ${u.with_prices} with prices · snapshot ${u.snapshot}`;
+    $('#ubody').innerHTML = `<div class="chips" style="margin:0 0 12px">${Object.entries(sectors).sort((a,b) => b[1]-a[1]).map(([s,n]) => `<span>${esc(s)} · ${n}</span>`).join('')}</div>
+      <div class="tw"><table><thead><tr><th>Ticker</th><th>Name</th><th>Sector</th><th>Prices</th><th>From → to</th><th class="n">Days</th></tr></thead><tbody>
+      ${rows.map(r => `<tr class="${r.has_prices?'click':''}" data-t="${r.has_prices?esc(r.ticker):''}"><td><code>${esc(r.ticker)}</code></td><td>${esc(r.name||'')}</td><td>${esc(r.sector||'')}</td>
+        <td>${r.has_prices ? '<span class="tag t-ok">Pulled</span>' : '<span class="tag t-warn">Not yet</span>'}</td><td class="nw">${r.has_prices ? esc(r.from)+' → '+esc(r.to) : '—'}</td><td class="n">${r.has_prices ? nf(r.rows,0) : '—'}</td></tr>`).join('')}
+      </tbody></table></div>${u.with_prices < u.count ? `<p class="hint" style="margin:10px 0 0">Pull the rest with <code>python -m src.ingest.run prices</code> (no <code>--limit</code>).</p>` : ''}`;
+    $('#ubody').querySelectorAll('tr[data-t]').forEach(tr => { if(tr.dataset.t) tr.onclick = () => nav('prices', {m:market, t:tr.dataset.t}); });
+  };
+  $('#flt').oninput = paint;
+  el.querySelectorAll('#only button').forEach(b => b.onclick = () => { only = b.dataset.k; el.querySelectorAll('#only button').forEach(x => x.classList.toggle('on', x===b)); paint(); });
+  paint();
+}
+
+loadStatus(); render();
 </script>
 </body>
 </html>

@@ -10,7 +10,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY app ./app
-COPY data-lab.html ./data-lab.html
+COPY index.html data-lab.html info-box.html ./
 
 RUN useradd --create-home appuser && chown -R appuser /srv
 USER appuser

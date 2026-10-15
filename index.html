@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stock Notifier</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%230d3531'/><rect x='14' y='14' width='16' height='16' rx='4' fill='%233fb36b'/><rect x='34' y='14' width='16' height='16' rx='4' fill='%23e9f6f1'/><rect x='14' y='34' width='16' height='16' rx='4' fill='%23e9f6f1'/><rect x='34' y='34' width='16' height='16' rx='4' fill='%23bcdadd'/></svg>">
+<meta name="theme-color" content="#c6e0e4">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600;700&display=swap" rel="stylesheet"><!-- optional font; falls back to system fonts offline -->
+<style>
+/* Same tokens as data-lab.html / info-box.html (Syntix-style, light day theme only) */
+:root{
+  color-scheme:light;
+  --page:#c6e0e4; --page2:#dcecee; --cream:#fbf7f3; --surface:#ffffff;
+  --ink:#10332e; --muted:#566f6b; --line:#e5eae7;
+  --dark:#0d3531; --accent:#3fb36b;
+  --teal:#2a7a82; --teal-soft:#e4f1f2; --teal-mid:#bcdadd;
+  --ok:#1d7a4a; --okbg:#dff3e7; --warn:#8a5a00; --warnbg:#fbefd2; --bad:#a3302a; --badbg:#f8e1df;
+  --shadow:0 10px 30px rgba(16,51,46,.08); --glass:rgba(255,255,255,.6);
+  --ease:cubic-bezier(.2,.8,.2,1);
+}
+*{box-sizing:border-box}
+body{margin:0;color:var(--ink);font:15px/1.6 "Urbanist",-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif;
+  background:linear-gradient(180deg,var(--page) 0,var(--page2) 480px,var(--page) 100%);min-height:100vh;display:flex;flex-direction:column}
+.hero{padding:22px 24px 34px}
+.wrap{max-width:1040px;margin:0 auto}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:17px;letter-spacing:-.02em}
+.logo i{width:26px;height:26px;border-radius:8px;background:var(--dark);display:grid;place-items:center;color:var(--accent);font-style:normal;font-size:13px}
+h1{margin:34px 0 0;font-size:clamp(32px,5vw,48px);line-height:1.1;letter-spacing:-.03em;font-weight:700}
+.sub{color:var(--muted);margin:10px 0 0;max-width:640px;font-size:16px}
+.band{flex:1;background:var(--cream);border-radius:22px 22px 0 0;box-shadow:0 -10px 40px rgba(16,51,46,.06)}
+main{max-width:1040px;margin:0 auto;padding:26px 24px 44px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.tile{position:relative;display:flex;flex-direction:column;text-decoration:none;color:inherit;background:var(--surface);border:1px solid var(--line);border-radius:22px;
+  padding:26px 26px 70px;min-height:300px;box-shadow:0 4px 18px rgba(16,51,46,.05);transition:transform .2s var(--ease),box-shadow .2s;animation:pop .45s var(--ease) both;animation-delay:var(--d,0ms)}
+.tile:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+.tile:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.eyebrow{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:6px}
+.tile h2{margin:0 0 8px;font-size:28px;letter-spacing:-.025em;line-height:1.15;display:flex;align-items:center;gap:10px}
+.tile h2::before{content:"";width:11px;height:11px;border-radius:3px;background:var(--accent)}
+.tile p{margin:0;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px}
+.chips span{font-size:12.5px;padding:4px 10px;border-radius:999px;background:var(--teal-soft);color:var(--teal);font-weight:600}
+.tag{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:4px 10px;border-radius:999px;white-space:nowrap}
+.chips span.t-ok,.t-ok{background:var(--okbg);color:var(--ok)} .chips span.t-warn,.t-warn{background:var(--warnbg);color:var(--warn)} .chips span.t-bad,.t-bad{background:var(--badbg);color:var(--bad)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}
+.stats div{background:var(--teal-soft);border-radius:12px;padding:10px 14px;min-width:0}
+.stats dt{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--teal)}
+.stats dd{margin:2px 0 0;font-size:20px;font-weight:700;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.go{position:absolute;right:20px;bottom:18px;display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px;background:var(--dark);color:#fff;font-weight:600;font-size:13.5px;
+  clip-path:polygon(0 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) calc(100% - 8px),calc(100% - 8px) 100%,0 100%);transition:filter .15s}
+.tile:hover .go{filter:brightness(1.15)}
+.note{margin-top:22px;font-size:12.5px;color:var(--muted)}
+footer{padding:22px 24px;color:var(--muted);font-size:12.5px;text-align:center;background:linear-gradient(180deg,var(--cream),var(--page2))}
+code{font:12px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--teal-soft);color:var(--teal);padding:1px 6px;border-radius:5px}
+@keyframes pop{from{opacity:0;transform:translateY(10px) scale(.98)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (max-width:720px){
+  .hero{padding:18px 16px 26px} main{padding:20px 16px 36px}
+  .grid{grid-template-columns:1fr} .tile{min-height:0} .stats{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+<header class="hero"><div class="wrap">
+  <div class="logo"><i>◆</i>Stock Notifier</div>
+  <h1>Stock Notifier</h1>
+  <p class="sub">Systematic trading experiments on NIFTY 50 and S&amp;P 100 (plus gold, oil, crypto), honestly tested against a plain NIFTY index fund after costs, taxes and FX — with explainable signals.</p>
+</div></header>
+
+<div class="band"><main>
+  <div class="grid">
+    <a class="tile" href="/data-lab" style="--d:80ms">
+      <div class="eyebrow">See the data</div>
+      <h2>Data Laboratory</h2>
+      <p>The data we actually collected: what was pulled and how clean it is, price charts, macro series and the stock lists.</p>
+      <dl class="stats" id="dl-stats">
+        <div><dt>Datasets</dt><dd>—</dd></div><div><dt>Last pull</dt><dd>—</dd></div><div><dt>Rows</dt><dd>—</dd></div>
+      </dl>
+      <div class="chips" id="dl-health"><span>Overview</span><span>Prices</span><span>Macro</span><span>Universe</span></div>
+      <span class="go">Open Data Lab →</span>
+    </a>
+    <a class="tile" href="/info-box" style="--d:150ms">
+      <div class="eyebrow">Know the project</div>
+      <h2>Information Box</h2>
+      <p>The project notebook: scope and benchmark, the data items and fields we track, sources, open checks, the tech stack and the changelog.</p>
+      <div class="chips"><span>Strategy &amp; Scope</span><span>Data</span><span>Sources &amp; Status</span><span>Tech Stack</span></div>
+      <span class="go">Open Info Box →</span>
+    </a>
+  </div>
+  <p class="note">Research project only, not investment advice.</p>
+</main></div>
+<footer>Stock Notifier · ml_ops_finance · <code>/data-lab</code> and <code>/info-box</code> are separate flows</footer>
+
+<script>
+/* Live stats for the Data Laboratory tile (read-only API in app/main.py). Page works without it. */
+(function(){
+  if(location.protocol==='file:') return;
+  const ago = iso => { if(!iso) return '—'; const m=(Date.now()-new Date(iso))/6e4;
+    return m<1?'just now':m<60?Math.round(m)+' min ago':m<1440?Math.round(m/60)+' h ago':Math.round(m/1440)+' d ago'; };
+  const big = v => v>=1e7?(v/1e7).toFixed(2)+' Cr':v>=1e5?(v/1e5).toFixed(2)+' L':v>=1e3?(v/1e3).toFixed(1)+'k':String(v);
+  fetch('/api/data/manifest').then(r => r.ok ? r.json() : Promise.reject()).then(m => {
+    const ds = Object.values(m.manifest||{});
+    const rows = ds.reduce((a,d) => a + ((d.validation||{}).rows || d.rows || 0), 0);
+    const issues = ds.reduce((a,d) => a + ((d.validation||{}).issues||[]).length + (d.missing_tickers||d.missing_series||[]).length, 0);
+    const last = ds.map(d => d.fetched_at).filter(Boolean).sort().pop();
+    document.getElementById('dl-stats').innerHTML =
+      `<div><dt>Datasets</dt><dd>${ds.length}</dd></div><div><dt>Last pull</dt><dd>${ago(last)}</dd></div><div><dt>Rows</dt><dd>${ds.length?big(rows):'—'}</dd></div>`;
+    const h = !ds.length ? '<span class="tag t-warn">No data yet</span>' : issues ? `<span class="tag t-warn">${issues} to review</span>` : '<span class="tag t-ok">No validation issues</span>';
+    document.getElementById('dl-health').insertAdjacentHTML('afterbegin', h);
+  }).catch(() => {});
+})();
+</script>
+</body>
+</html>

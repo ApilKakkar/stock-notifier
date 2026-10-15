@@ -6,7 +6,10 @@ The goal is to test honestly whether a strategy beats a plain NIFTY 50 index fun
 
 > Research project only, not investment advice.
 
-For now the app serves the **Data Laboratory**: a living notebook of the data, signals, sources, experiments and open checks for the project, organised as a 2×2 drill-down.
+The app opens on the **Stock Notifier** landing page (`/`), which has two tiles leading to two separate flows. The two pages don't link to each other; each links back to `/`.
+
+- **Data Laboratory** (`/data-lab`): a viewer for the data actually collected. It shows what was pulled, price charts, macro series and the stock lists.
+- **Information Box** (`/info-box`): the project notebook of data items, fields, sources, experiments, decisions and open checks, organised as a 2×2 drill-down. This was called the Data Laboratory until 2026-10-15.
 
 ---
 
@@ -22,13 +25,13 @@ cd stock-notifier
 docker compose up --build
 ```
 
-Open http://localhost:8080. It redirects to `/data-lab`.
+Open http://localhost:8080 to reach the Stock Notifier landing page. Docker mounts your local `data/` folder read-only, so the Data Lab shows whatever you've pulled.
 
 Stop with `Ctrl+C`, or `docker compose down`.
 
 ### Option 2 — Docker in dev mode (live edits)
 
-Mounts `data-lab.html` and `app/` into the container, so edits show up on refresh without a rebuild:
+Mounts `index.html`, `data-lab.html`, `info-box.html`, `app/` and `data/` into the container, so edits show up on refresh without a rebuild:
 
 ```bash
 docker compose --profile dev up web-dev
@@ -46,9 +49,11 @@ uvicorn app.main:app --reload --port 8080
 
 Open http://localhost:8080.
 
-### Option 4 — Just view the page
+### Option 4 — Just view the notebook
 
-`data-lab.html` is self-contained, so you can open it directly in a browser. In VS Code, the **Live Server** extension (`ritwickdey.LiveServer`, recommended in `.vscode/extensions.json`) gives auto-reload: right-click `data-lab.html` → **Open with Live Server**.
+`info-box.html` is self-contained, so you can open it directly in a browser. In VS Code, the **Live Server** extension (`ritwickdey.LiveServer`, recommended in `.vscode/extensions.json`) gives auto-reload: right-click `info-box.html` → **Open with Live Server**.
+
+`data-lab.html` (and the live stats on `index.html`) need the app running (Options 1–3), because it reads data through the `/api/data/*` endpoints.
 
 ---
 
@@ -79,16 +84,36 @@ Options: `--markets india us`, `--start 2010-01-01`, `--end`, `--limit N`, `--fu
 - **Not automated yet:** RBI repo rate, FII/DII flows, India fundamentals (Screener / NSE XBRL).
 - **Tests (offline):** `python -m pytest -q tests`
 
+### Seeing the data
+
+After a pull, start the app (`uvicorn app.main:app --reload --port 8080`; install `requirements.txt` in the same venv first) and open http://localhost:8080/data-lab. It has four cards:
+
+| Card | Shows |
+|---|---|
+| **Overview** | Every dataset from `manifest.json` (rows, date range, health, when it was pulled), problems and caveats, files on disk, and how fresh each macro series is |
+| **Prices** | NIFTY 50 / S&P 100. One stock shows price + volume, return, CAGR, volatility, max drawdown and the last 20 days. 2–4 stocks are rebased to 100. Ranges 1Y–All; adjusted close or close |
+| **Macro** | Any of the 18 series, up to 4 at once (mixed units are rebased to 100) |
+| **Universe** | Constituent list with sector, filterable, showing which stocks already have prices. Click a row to chart it |
+
+Use **Refresh** after re-running the ingest. Deep links work, e.g. `/data-lab#/prices?m=nifty50&t=RELIANCE.NS,TCS.NS&r=5y`.
+
 ---
 
 ## Routes
 
 | Route | What it does |
 |---|---|
-| `/` | Redirects (307) to `/data-lab`, the default page for now |
-| `/data-lab` | The Data Laboratory page |
-| `/healthz` | Health check → `{"status":"ok","data_lab":true}` |
-| `/api/docs` | OpenAPI docs (for APIs added later) |
+| `/` | Stock Notifier landing page (`index.html`): tiles for the Data Laboratory and the Information Box |
+| `/data-lab` | Data Laboratory: viewer for the collected data |
+| `/info-box` | Information Box: the project notebook |
+| `/api/data/manifest` | `manifest.json` plus the list of data files |
+| `/api/data/universe/{nifty50\|sp100}` | Constituents, flagged with whether prices exist |
+| `/api/data/prices/{market}` | Per-ticker summary; with `?tickers=A,B&start=&end=` it returns series (≤1,500 points each), stats and the last 20 rows |
+| `/api/data/macro` | Per-series summary; with `?series=a,b&start=&end=` it returns series and stats |
+| `/healthz` | Health check → `{"status":"ok","index":true,"data_lab":true,"info_box":true,"data_dir":…}` |
+| `/api/docs` | OpenAPI docs |
+
+The data API is read-only. It reads `data/raw/` (override with `DATA_DIR`).
 
 ---
 
@@ -117,16 +142,18 @@ docker run -p 8080:8080 ml-ops-finance
 ```
 .
 ├── app/
-│   └── main.py            # FastAPI app: / → /data-lab, /healthz
-├── data-lab.html          # Data Laboratory (single self-contained page)
+│   └── main.py            # FastAPI app: pages, read-only /api/data/*, /healthz
+├── index.html             # Stock Notifier landing page (/): two tiles → two flows
+├── data-lab.html          # Data Laboratory: viewer for the collected data (needs the app)
+├── info-box.html          # Information Box: project notebook (single self-contained page)
 ├── data-lab.v1-sections.bak.html   # earlier single-scroll version (kept for reference)
 ├── Dockerfile             # python:3.12-slim, uvicorn, non-root, healthcheck
 ├── docker-compose.yml     # `web` (prod-like) and `web-dev` (live reload) services
-├── requirements.txt       # web app: fastapi, uvicorn
-├── requirements-data.txt  # ingestion: pandas, pyarrow, yfinance, requests, lxml, pytest
+├── requirements.txt       # web app: fastapi, uvicorn, pandas, pyarrow
+├── requirements-data.txt  # ingestion + tests: pandas, pyarrow, yfinance, requests, lxml, pytest, httpx
 ├── src/ingest/            # universe, prices, macro, fundamentals, validate, CLI (run.py)
-├── tests/                 # offline tests for the ingestion code
-├── CLAUDE.md              # project conventions + rules for updating the Data Lab
+├── tests/                 # offline tests for the ingestion code and the web app
+├── CLAUDE.md              # project conventions + rules for updating the Information Box and Data Lab
 └── .vscode/               # Live Server recommendation
 ```
 
@@ -134,18 +161,18 @@ Planned folders for the modelling work (not in git yet): `data/processed`, `back
 
 ---
 
-## Using the Data Laboratory
+## Using the Information Box
 
-- It opens on 4 cards: **Universe & Scope · Data · Sources & Infrastructure · Strategy & Roadmap**.
+- It opens on 4 cards: **Strategy & Scope · Data · Sources & Status · Tech Stack**.
 - Click a card to zoom in; each level shows at most 4 cards, and the last level is a detail card.
 - Navigation: **Back / Forward / Up / Home** buttons and clickable breadcrumbs.
 - Keyboard: `Esc` = up · `Alt+←/→` = back/forward · `/` = search.
 - Search covers the whole tree; click a result to jump to it.
-- Deep links: the URL hash tracks your position (e.g. `/data-lab#/1/1/0/2`), so views can be bookmarked.
+- Deep links: the URL hash tracks your position (e.g. `/info-box#/1/1/0/2`), so views can be bookmarked.
 
 ### Adding content
 
-All content lives in the `DATA` tree inside the `<script>` of `data-lab.html`:
+All content lives in the `DATA` tree inside the `<script>` of `info-box.html`:
 
 ```js
 // Branch
@@ -160,7 +187,7 @@ Rules (full version in `CLAUDE.md`):
 
 - Every level has **2–4 children**. When a 5th item arrives, regroup into sub-groups; never drop items.
 - Enrich, never delete. Mark outdated items instead of removing them.
-- Add a dated entry to **Strategy & Roadmap → Changelog** for every update.
+- Add a dated entry to **Sources & Status → Changelog** for every update.
 - Tags:
   - `dec` = Decided
   - `chk` = To check

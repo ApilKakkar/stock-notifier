@@ -4,8 +4,11 @@ services:
     image: ml-ops-finance:latest
     ports:
       - "8080:8080"
+    volumes:
+      # collected data, read-only (never baked into the image) -> shown in /data-lab
+      - ./data:/srv/data:ro
     restart: unless-stopped
-  # Dev mode: live-edit data-lab.html / app code without rebuilding
+  # Dev mode: live-edit index.html / data-lab.html / info-box.html / app code without rebuilding
   #   docker compose --profile dev up web-dev
   web-dev:
     profiles: ["dev"]
@@ -13,6 +16,9 @@ services:
     ports:
       - "8080:8080"
     volumes:
+      - ./index.html:/srv/index.html:ro
       - ./data-lab.html:/srv/data-lab.html:ro
+      - ./info-box.html:/srv/info-box.html:ro
+      - ./data:/srv/data:ro
       - ./app:/srv/app:ro
     command: ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload"]

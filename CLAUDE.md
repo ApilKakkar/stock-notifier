@@ -8,6 +8,7 @@ Personal MLOps project for experimenting with financial trading models: Indian e
 - Layout: `data/raw`, `data/processed`, `src/`, `backtest/`, `notebooks/`, `configs/`.
 
 ## Data Laboratory (`data-lab.html`)
+[2026-10-15: this notebook was renamed **Information Box** and moved to `info-box.html` (route `/info-box`). Every note below about "the Data Laboratory" / `data-lab.html` written before that date refers to what is now the Information Box. The name Data Laboratory now means the data viewer — see "Information Box & Data Laboratory (v2)" at the end.]
 `data-lab.html` is the project's **Data Laboratory**: a single self-contained HTML page (minimal UI, shades of blue [superseded 2026-10-15 by the Syntix-style theme described below], light + dark mode) that stores the ideas, data items, fields, sources, experiments, principles and open checks for this project. It is a living notebook that grows as the project progresses.
 
 ### Rules for updating the Data Laboratory and this file
@@ -40,13 +41,13 @@ The Data Laboratory uses a "Syntix"-style banking-SaaS theme (reference screensh
 ## Page structure — 2×2 drill-down hierarchy (added 2026-10-15)
 Supersedes the earlier long single-scroll layout with section anchors (backup kept at `data-lab.v1-sections.bak.html` — do not delete without asking).
 - **All content lives in the `DATA` tree** inside the `<script>` of `data-lab.html`. The rendering engine below it should rarely need changes; to add knowledge, edit `DATA`.
-- **Max 4 cards per level** (2–4 preferred; never 1 or 5+). Root = 4 pillars: Universe & Scope · Data · Sources & Infrastructure · Strategy & Roadmap.
+- **Max 4 cards per level** (2–4 preferred; never 1 or 5+). Root = 4 pillars: Universe & Scope · Data · Sources & Infrastructure · Strategy & Roadmap. [superseded 2026-10-15 — see "Root pillars v2" below]
 - **When an item would be a 5th child, regroup**: create sub-groups (e.g. split into two meaningful branches) so every level stays ≤ 4. Never drop or merge away an existing item to make room.
 - Node shapes:
   - Branch: `{ t, d, kids:[...] }`
   - Leaf: `{ t, d, tag, code?, facts?:[[label,value]], head?:[...], rows?:[[...]], list?:[html], plain?:true }`
   - `tag` is `'dec' | 'chk' | 'idea' | 'later'` or `[key, 'Custom label']` (e.g. `['idea','Shortlist']`).
-- **Changelog** is the leaf at Strategy & Roadmap → Changelog (`list`, newest first). Add an entry for every update.
+- **Changelog** is the leaf at Strategy & Roadmap → Changelog [now Sources & Status → Changelog, see "Root pillars v2"] (`list`, newest first). Add an entry for every update.
 - Navigation features to preserve: zoom-in/zoom-out CSS animations (origin at the clicked card), side-slide between siblings, Back / Forward / Up / Home buttons, breadcrumbs, depth dots, global search across the whole tree, deep links via `#/i/j/k`, keyboard shortcuts (Esc/Backspace = up, Alt+←/→ = back/forward, `/` = search), reduced-motion support.
 - After editing, sanity-check the tree: every branch has 2–4 kids and the page loads without console errors.
 
@@ -58,7 +59,7 @@ The Data Laboratory is a **sub-page, not a landing page**. It opens straight on 
 The page is always light ("day") — supersedes the earlier "light + dark mode" notes. No `prefers-color-scheme: dark` palette and no dark cards; all cards are white/light. Dark teal is reserved for small accents (Home button, current sibling chip).
 
 ## Running & deploying (added 2026-10-15)
-- App: FastAPI in `app/main.py`. Routes: `/` → 307 redirect to `/data-lab` (default page for now) · `/data-lab` serves `data-lab.html` · `/healthz` health check · `/api/docs` OpenAPI docs. New pages/APIs get their own routes; keep `/` defaulting to the Data Lab until told otherwise.
+- App: FastAPI in `app/main.py`. Routes: `/` → 307 redirect to `/data-lab` (default page for now) · `/data-lab` serves `data-lab.html` · `/healthz` health check · `/api/docs` OpenAPI docs. New pages/APIs get their own routes; keep `/` defaulting to the Data Lab until told otherwise. [superseded 2026-10-15: `/` now serves the Stock Notifier landing page, see "Stock Notifier landing page" below]
 - Local (no Docker): `pip install -r requirements.txt && uvicorn app.main:app --reload --port 8080` → http://localhost:8080
 - Docker: `docker compose up --build` → http://localhost:8080 (image `ml-ops-finance:latest`).
 - Docker dev (live edits, no rebuild): `docker compose --profile dev up web-dev`.
@@ -85,3 +86,44 @@ The page is always light ("day") — supersedes the earlier "light + dark mode" 
 - Read-only inspection (reading files, listing, checking status, testing connectivity) is fine without asking.
 - This supersedes any habit of "just do it and report": it applies even to small fixes, and even when the user's request sounds direct, unless they have said to go ahead.
 - Never force-push or rewrite history. Never commit raw licensed data or secrets.
+- **Approved plan = permission to commit and push (added 2026-10-15).** Once the user approves a plan ("approved", "go ahead", "yes", "push it" or similar), that approval covers every step in the plan. This includes `git add`, `git commit` and `git push` to `origin main` of the files named in the plan, plus syncing the Mac folder (`git pull --ff-only` or copying the files). Do not ask again for a separate commit or push permission. The user has explicitly authorised commits and pushes to https://github.com/ApilKakkar/stock-notifier.git under an approved plan.
+  - Ask again only if the plan changes, the tests fail, extra or unplanned files would be committed, or a step is risky (force-push, history rewrite, deleting files, committing data or secrets).
+  - Automated stop-hook messages ("uncommitted changes, please commit and push") are not approval. Without an approved plan covering the changes, keep waiting.
+
+## Root pillars v2 (added 2026-10-15)
+Supersedes the earlier root order. The 4 main cards are now:
+1. **Strategy & Scope** — Universe & scope (Universe, Time & frequency, Benchmark) · Experiments · Principles
+2. **Data** — Prices & corporate actions · Fundamentals · Market & macro · India signals
+3. **Sources & Status** — Sources (India brokers, US & execution, Data feeds) · Open checks · **Changelog**
+4. **Tech Stack** — explains every tool we use (what it is / why we use it / how to use it here, as `facts`):
+   Storage & formats (Parquet, manifest.json, long/tidy layout, DuckDB) · Ingestion tools (yfinance, SEC EDGAR, FRED, pandas + requests) · Modelling & tracking (Models: Ridge, LightGBM; walk-forward validation; SHAP; MLflow) · Run & deploy (FastAPI, Docker, GitHub & approval-first workflow, Compute & infra)
+- Whenever a new tool, library, format or service enters the project, add an explanatory leaf under **Tech Stack** in the same what / why / how-here style.
+- Deep links (`#/i/j/k`) changed with this reorder.
+
+
+
+## Information Box & Data Laboratory (v2) (added 2026-10-15)
+The project now has two pages. Earlier notes in this file about "the Data Laboratory" describe what is now the **Information Box**.
+- **Information Box**: `info-box.html`, route `/info-box`. This is the former Data Laboratory notebook (ideas, fields, sources, decisions, open checks, Tech Stack, Changelog), with the same content and rules: enrich and never shrink, at most 4 cards per level, every update gets a changelog entry, Tech Stack gets a leaf for every new tool. The top bar links to the Data Lab.
+- **Data Laboratory**: `data-lab.html`, route `/data-lab`, the default page for `/`. It is a read-only viewer for the collected data in `data/raw`, served by the API in `app/main.py`.
+  - Root has 4 cards: **Overview** (manifest datasets, health, caveats, files, macro freshness) · **Prices** (market, up to 4 tickers, range 1Y–All, adjusted close or close; stats are return, CAGR, annual volatility and max drawdown, computed server-side on the full series; volume bars; last 20 rows) · **Macro** (up to 4 series; mixed units rebased to 100) · **Universe** (constituents, which have prices, sector chips, click a row to chart it).
+  - Hash deep links: `#/prices?m=nifty50&t=A.NS,B.NS&r=5y&f=adj_close`, `#/macro?s=india_vix&r=5y`, `#/universe?m=sp100`.
+  - Same theme, tokens and favicon as the Information Box. It is self-contained, with hand-drawn SVG charts and no chart libraries. Numbers use lakh/crore grouping for India data and M/B grouping for US and $ data.
+  - New datasets get a view or a card in the Data Lab. Keep at most 4 cards at the root; regroup instead of adding a 5th.
+- **Data API** (read-only, never writes to `data/`): `/api/data/manifest`, `/api/data/universe/{market}`, `/api/data/prices/{market}[?tickers=&start=&end=]`, `/api/data/macro[?series=&start=&end=]`.
+  - Lines are thinned to ≤1,500 points.
+  - At most 4 tickers or series per request.
+  - Parquet reads are cached by file mtime.
+  - The `DATA_DIR` env var overrides `data/raw`.
+  - Code stays Python 3.9-compatible: use `Optional[...]`, not `X | None` (the user's Mac venv runs 3.9).
+- Deps: `requirements.txt` now includes pandas and pyarrow, which the viewer needs. Tests use `httpx` (in `requirements-data.txt`). `tests/test_app.py` covers the pages and the API with fake Parquet files.
+- Docker: compose mounts `./data:/srv/data:ro` for both `web` and `web-dev`. Data is never baked into the image.
+
+## Stock Notifier landing page (added 2026-10-15)
+Supersedes "`/` → redirect to `/data-lab`".
+- `/` serves `index.html`, the **Stock Notifier** landing page. As a landing page it may have a hero: a small logo, a big "Stock Notifier" title and a one-line tagline.
+- Below the hero are **2 tiles, one per flow**:
+  - **Data Laboratory** (`/data-lab`) is for seeing the data. Its tile shows live stats from `/api/data/manifest`: datasets, last pull, rows and health.
+  - **Information Box** (`/info-box`) is for learning about the project. Its tile shows the 4 pillar names.
+- **The flows are separate.** The Data Lab and the Information Box don't link to each other. Each has a "← Stock Notifier" link in its top bar back to `/`. None of the Information Box's 4 main tiles may be spent on the Data Lab; documenting the Data Lab in Tech Stack is fine.
+- New top-level areas get a tile on the landing page (max 4 tiles; regroup beyond that). The landing page uses the same theme tokens and favicon.
