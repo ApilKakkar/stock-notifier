@@ -76,3 +76,12 @@ The page is always light ("day") — supersedes the earlier "light + dark mode" 
 - SEC EDGAR needs `SEC_USER_AGENT` set by the user; never hardcode or send their email.
 - Known gaps: RBI repo rate, FII/DII flows, India fundamentals (Screener/NSE XBRL), Bloomberg historical constituents.
 
+
+## Approval-first workflow (added 2026-10-15)
+**Do not execute or push anything directly.** For any change to the project — code, data pulls, installs, Docker builds, file edits, commits — and above all anything touching GitHub:
+1. **Share a plan first.** Say what you intend to do: which files change, which commands run, what gets committed/pushed, and any risks or things you cannot verify.
+2. **Wait for the user's explicit approval.** Silence or a loosely related message is not approval. Approval covers only the plan as stated; if the plan changes, share the new plan.
+3. **Only then make the changes**, and only after approval commit and push to GitHub. Report what was done (commit hash, files).
+- Read-only inspection (reading files, listing, checking status, testing connectivity) is fine without asking.
+- This supersedes any habit of "just do it and report": it applies even to small fixes, and even when the user's request sounds direct, unless they have said to go ahead.
+- Never force-push or rewrite history. Never commit raw licensed data or secrets.
