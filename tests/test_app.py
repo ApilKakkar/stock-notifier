@@ -37,14 +37,44 @@ client = TestClient(main.app)
 def test_pages_and_redirect():
     r = client.get("/", follow_redirects=False)
     assert r.status_code == 200 and "<title>Stock Notifier</title>" in r.text
-    assert 'href="/data-lab"' in r.text and 'href="/info-box"' in r.text
+    assert 'href="data-lab"' in r.text and 'href="info-box"' in r.text
     assert "<title>Data Laboratory</title>" in client.get("/data-lab").text
     info, lab = client.get("/info-box").text, client.get("/data-lab").text
     assert "<title>Information Box</title>" in info
-    assert 'href="/data-lab"' not in info and 'href="/info-box"' not in lab     # separate flows
-    assert 'href="/"' in info and 'href="/"' in lab                           # both link home
+    assert 'href="data-lab"' not in info and 'href="info-box"' not in lab       # separate flows
+    assert 'href="./"' in info and 'href="./"' in lab                         # both link home
     h = client.get("/healthz").json()
     assert h["status"] == "ok" and h["index"] and h["data_lab"] and h["info_box"]
+
+
+def test_pages_use_relative_urls_only():
+    """Absolute links/fetches break when served under BASE_PATH behind a reverse proxy."""
+    import re
+    for page in (main.INDEX, main.DATA_LAB, main.INFO_BOX):
+        html = page.read_text()
+        assert 'href="/"' not in html and 'href="/data-lab"' not in html and 'href="/info-box"' not in html, page
+        assert not re.search(r"""(fetch|api)\(\s*['"`]/""", html), page            # no fetch('/...') or api('/...')
+
+
+@pytest.mark.parametrize("base", ["/stock-notifier", "stock-notifier/", "/stock-notifier/"])
+def test_base_path_serves_everything_under_prefix(data_dir, base):
+    c = TestClient(main.create_app(base))
+    r = c.get("/stock-notifier", follow_redirects=False)
+    assert r.status_code == 307 and r.headers["location"] == "/stock-notifier/"
+    assert "<title>Stock Notifier</title>" in c.get("/stock-notifier/").text
+    assert "<title>Data Laboratory</title>" in c.get("/stock-notifier/data-lab").text
+    assert "<title>Information Box</title>" in c.get("/stock-notifier/info-box").text
+    assert c.get("/stock-notifier/api/data/manifest").json()["exists"]
+    assert c.get("/stock-notifier/api/data/prices/nifty50").status_code == 200
+    assert c.get("/stock-notifier/api/docs").status_code == 200
+    assert c.get("/healthz").json()["status"] == "ok"                     # root health check for Docker
+    assert c.get("/stock-notifier/healthz").json()["status"] == "ok"
+    assert c.get("/data-lab").status_code == 404 and c.get("/api/data/manifest").status_code == 404
+
+
+@pytest.mark.parametrize("raw,norm", [(None, ""), ("", ""), ("/", ""), ("  /a/b/ ", "/a/b"), ("x", "/x")])
+def test_normalise_base_path(raw, norm):
+    assert main.normalise_base_path(raw) == norm
 
 
 def test_manifest(data_dir):

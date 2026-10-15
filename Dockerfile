@@ -3,7 +3,8 @@ FROM python:3.12-slim
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PORT=8080 \
-    WEB_ROOT=/srv
+    WEB_ROOT=/srv \
+    BASE_PATH=""
 
 WORKDIR /srv
 COPY requirements.txt .

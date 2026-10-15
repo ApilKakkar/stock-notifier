@@ -127,3 +127,9 @@ Supersedes "`/` → redirect to `/data-lab`".
   - **Information Box** (`/info-box`) is for learning about the project. Its tile shows the 4 pillar names.
 - **The flows are separate.** The Data Lab and the Information Box don't link to each other. Each has a "← Stock Notifier" link in its top bar back to `/`. None of the Information Box's 4 main tiles may be spent on the Data Lab; documenting the Data Lab in Tech Stack is fine.
 - New top-level areas get a tile on the landing page (max 4 tiles; regroup beyond that). The landing page uses the same theme tokens and favicon.
+
+## Base path / reverse proxy (added 2026-10-16)
+- `app/main.py` builds the app with `create_app(BASE_PATH)`. All pages and API routes live on one `APIRouter`, mounted under `BASE_PATH`. The env var is empty by default; set `BASE_PATH=/stock-notifier` behind a reverse proxy.
+- With a prefix, the bare `/stock-notifier` redirects (307) to `/stock-notifier/`, `/healthz` is served at both the root and the prefix, and the docs and OpenAPI paths move under the prefix.
+- **Pages must use relative URLs only**: `href="data-lab"`, `href="info-box"`, `href="./"` (home), `fetch('api/data/...')`. Never start a link or fetch with `/`. Hash deep links (`#/...`) are fine. `tests/test_app.py` fails if an absolute `/data-lab`, `/info-box`, `/api` or `href="/"` creeps back in.
+- New routes go on `router` (not `app`), so they pick up the prefix automatically.

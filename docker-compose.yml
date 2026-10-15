@@ -4,6 +4,9 @@ services:
     image: ml-ops-finance:latest
     ports:
       - "8080:8080"
+    # Behind a reverse proxy at https://<domain>/stock-notifier/ uncomment:
+    # environment:
+    #   - BASE_PATH=/stock-notifier
     volumes:
       # collected data, read-only (never baked into the image) -> shown in /data-lab
       - ./data:/srv/data:ro

@@ -128,7 +128,7 @@ footer{padding:24px;color:var(--muted);font-size:12.5px;text-align:center;backgr
 <body>
 <header class="topbar">
   <div class="bar">
-    <a class="xlink" href="/" title="Back to the Stock Notifier home page">← Stock Notifier</a>
+    <a class="xlink" href="./" title="Back to the Stock Notifier home page">← Stock Notifier</a>
     <div class="logo"><i>◆</i>Data Lab</div>
     <div class="status" id="status">Loading…</div>
   </div>
@@ -324,7 +324,7 @@ document.addEventListener('keydown', e => {
 async function loadStatus(){
   if(location.protocol==='file:'){ $('#status').innerHTML = 'Open via the app (<b>uvicorn</b>) to load data'; return; }
   try{
-    const m = await api('/api/data/manifest'); const ds = Object.values(m.manifest);
+    const m = await api('api/data/manifest'); const ds = Object.values(m.manifest);
     const last = ds.map(d => d.fetched_at).filter(Boolean).sort().pop();
     $('#status').innerHTML = ds.length ? `<b>${ds.length}</b> datasets · last pull <b>${ago(last)}</b>` : 'No data pulled yet';
   }catch(e){ $('#status').textContent = 'API not reachable'; }
@@ -338,7 +338,7 @@ async function renderRoot(el){
   el.querySelectorAll('.card').forEach(b => b.onclick = () => nav(b.dataset.v));
   if(location.protocol==='file:'){ $('#live-overview').innerHTML = emptyHTML('This page reads data through the app API — open it via uvicorn.'); return; }
   const live = (id, html) => { const n = document.getElementById('live-'+id); if(n) n.innerHTML = html; };
-  api('/api/data/manifest').then(m => {
+  api('api/data/manifest').then(m => {
     const ds = Object.values(m.manifest), issues = ds.reduce((a,d) => a + ((d.validation||{}).issues||[]).length, 0);
     const miss = ds.reduce((a,d) => a + (d.missing_tickers||d.missing_series||[]).length, 0);
     const rows = ds.reduce((a,d) => a + ((d.validation||{}).rows || d.rows || 0), 0);
@@ -346,12 +346,12 @@ async function renderRoot(el){
       <div class="chips">${issues||miss ? `<span class="tag t-warn">${issues} issues · ${miss} missing</span>` : '<span class="tag t-ok">No validation issues</span>'}<span>${m.files.length} files</span></div>`
       : '<div class="chips"><span class="tag t-warn">No data yet</span></div>');
   }).catch(() => live('overview', '<div class="chips"><span class="tag t-bad">API not reachable</span></div>'));
-  api('/api/data/prices/nifty50').then(r => live('prices', `<div class="big">${r.tickers.length}<small>NIFTY 50 stocks with prices</small></div>`)).catch(() => {});
-  api('/api/data/macro?series=nifty50&start=' + startFor('5y')).then(r => {
+  api('api/data/prices/nifty50').then(r => live('prices', `<div class="big">${r.tickers.length}<small>NIFTY 50 stocks with prices</small></div>`)).catch(() => {});
+  api('api/data/macro?series=nifty50&start=' + startFor('5y')).then(r => {
     const s = r.series.nifty50; if(!s.rows) return;
     live('macro', `<div class="big">${nf(s.stats.last,0)}<small>NIFTY 50 · 5Y ${pct(s.stats.pct_change)}</small></div>${sparkSVG(toPts(s.points,'value'))}`);
   }).catch(() => {});
-  Promise.allSettled(['nifty50','sp100'].map(k => api('/api/data/universe/'+k))).then(rs => {
+  Promise.allSettled(['nifty50','sp100'].map(k => api('api/data/universe/'+k))).then(rs => {
     const ok = rs.filter(r => r.status==='fulfilled').map(r => r.value); if(!ok.length) return;
     live('universe', `<div class="chips">${ok.map(u => `<span>${esc(MARKET_LABEL[u.market])}: ${u.with_prices}/${u.count} pulled</span>`).join('')}</div>`);
   });
@@ -360,7 +360,7 @@ async function renderRoot(el){
 /* ----------------------------------------------------------- overview */
 async function renderOverview(el){
   el.innerHTML = `<div class="vhead"><h2>Overview</h2><p>Everything in <code>data/raw</code>, read from <code>manifest.json</code> (written on every ingest run).</p></div><div id="ov"><div class="skel"></div></div>`;
-  let m; try{ m = await api('/api/data/manifest'); }catch(e){ $('#ov').innerHTML = emptyHTML('API not reachable: ' + e.message); return; }
+  let m; try{ m = await api('api/data/manifest'); }catch(e){ $('#ov').innerHTML = emptyHTML('API not reachable: ' + e.message); return; }
   const ds = Object.entries(m.manifest);
   if(!ds.length){ $('#ov').innerHTML = `<div class="panel">${emptyHTML('No manifest.json found in ' + m.data_dir + '.')}</div>`; return; }
   const health = d => { const v = d.validation||{}, iss = (v.issues||[]).length, miss = (d.missing_tickers||d.missing_series||[]).length;
@@ -415,7 +415,7 @@ async function renderPrices(el){
   el.querySelectorAll('#mk button').forEach(b => b.onclick = () => set({m:b.dataset.k, t:''}));
   el.querySelectorAll('#rg button').forEach(b => b.onclick = () => set({r:b.dataset.k}, true));
   el.querySelectorAll('#fd button').forEach(b => b.onclick = () => set({f:b.dataset.k}, true));
-  let summary; try{ summary = await api('/api/data/prices/' + market); }
+  let summary; try{ summary = await api('api/data/prices/' + market); }
   catch(e){ $('#pbody').innerHTML = `<div class="panel">${emptyHTML(e.status===404 ? `No ${MARKET_LABEL[market]} prices yet.` : 'API error: ' + e.message)}</div>`; return; }
   const known = summary.tickers.map(x => x.ticker);
   $('#tklist').innerHTML = known.map(t => `<option value="${esc(t)}">`).join('');
@@ -426,7 +426,7 @@ async function renderPrices(el){
   $('#picked').querySelectorAll('[data-x]').forEach(b => b.onclick = () => { const rest = picked.filter(t => t!==b.dataset.x); set({t:(rest.length?rest:known.slice(0,1)).join(',')}); });
   $('#tk').onchange = e => { const t = e.target.value.trim().toUpperCase(), hit = known.find(k => k.toUpperCase()===t || k.toUpperCase()===t+'.NS');
     if(hit && !picked.includes(hit)){ if(picked.length>=4) picked.shift(); set({t:[...picked, hit].join(',')}); } e.target.value=''; };
-  let r; try{ r = await api(`/api/data/prices/${market}?tickers=${encodeURIComponent(picked.join(','))}&start=${startFor(range)}`); }
+  let r; try{ r = await api(`api/data/prices/${market}?tickers=${encodeURIComponent(picked.join(','))}&start=${startFor(range)}`); }
   catch(e){ $('#pbody').innerHTML = `<div class="panel">${emptyHTML('API error: ' + e.message, false)}</div>`; return; }
   const one = picked.length===1, S = r.series;
   // stats
@@ -459,7 +459,7 @@ async function renderMacro(el){
       <div class="seg" id="rg">${RANGES.map(([k,l]) => `<button data-k="${k}" class="${k===range?'on':''}">${l}</button>`).join('')}</div>
     </div><div class="picked" id="picked"></div></div>
     <div id="mbody"><div class="panel"><div class="skel"></div></div></div>`;
-  let sum; try{ sum = await api('/api/data/macro'); }
+  let sum; try{ sum = await api('api/data/macro'); }
   catch(e){ $('#mbody').innerHTML = `<div class="panel">${emptyHTML(e.status===404 ? 'No macro data yet.' : 'API error: ' + e.message)}</div>`; return; }
   const known = sum.series.map(s => s.series);
   let picked = (p.s ? p.s.split(',') : []).filter(s => known.includes(s)).slice(0,4);
@@ -470,7 +470,7 @@ async function renderMacro(el){
   $('#ms').onchange = e => { if(!e.target.value) return; const nx = [...picked, e.target.value]; if(nx.length>4) nx.shift(); set({s:nx.join(',')}); };
   $('#picked').innerHTML = picked.map((s,i) => `<span class="pill"><i style="background:${COLORS[i]}"></i>${esc(label(s))}<button data-x="${esc(s)}" title="Remove">×</button></span>`).join('');
   $('#picked').querySelectorAll('[data-x]').forEach(b => b.onclick = () => { const rest = picked.filter(s => s!==b.dataset.x); set({s:(rest.length?rest:[known[0]]).join(',')}); });
-  let r; try{ r = await api(`/api/data/macro?series=${encodeURIComponent(picked.join(','))}&start=${startFor(range)}`); }
+  let r; try{ r = await api(`api/data/macro?series=${encodeURIComponent(picked.join(','))}&start=${startFor(range)}`); }
   catch(e){ $('#mbody').innerHTML = `<div class="panel">${emptyHTML('API error: ' + e.message, false)}</div>`; return; }
   LOC = picked.every(s => INDIA_SERIES.test(s)) ? 'en-IN' : 'en-US';
   const S = r.series, one = picked.length===1, src = Object.fromEntries(sum.series.map(s => [s.series, s.source]));
@@ -501,7 +501,7 @@ async function renderUniverse(el){
       <span class="hint" id="cnt"></span>
     </div><div id="ubody"><div class="skel"></div></div></div>`;
   el.querySelectorAll('#mk button').forEach(b => b.onclick = () => nav('universe', {m:b.dataset.k}));
-  let u; try{ u = await api('/api/data/universe/' + market); }
+  let u; try{ u = await api('api/data/universe/' + market); }
   catch(e){ $('#ubody').innerHTML = emptyHTML(e.status===404 ? `No ${MARKET_LABEL[market]} universe snapshot yet.` : 'API error: ' + e.message); return; }
   const sectors = {}; u.rows.forEach(r => { const k = r.sector || '—'; sectors[k] = (sectors[k]||0) + 1; });
   let only = 'all';

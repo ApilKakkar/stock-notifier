@@ -71,7 +71,7 @@ code{font:12px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--
 
 <div class="band"><main>
   <div class="grid">
-    <a class="tile" href="/data-lab" style="--d:80ms">
+    <a class="tile" href="data-lab" style="--d:80ms">
       <div class="eyebrow">See the data</div>
       <h2>Data Laboratory</h2>
       <p>The data we actually collected: what was pulled and how clean it is, price charts, macro series and the stock lists.</p>
@@ -81,7 +81,7 @@ code{font:12px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--
       <div class="chips" id="dl-health"><span>Overview</span><span>Prices</span><span>Macro</span><span>Universe</span></div>
       <span class="go">Open Data Lab →</span>
     </a>
-    <a class="tile" href="/info-box" style="--d:150ms">
+    <a class="tile" href="info-box" style="--d:150ms">
       <div class="eyebrow">Know the project</div>
       <h2>Information Box</h2>
       <p>The project notebook: scope and benchmark, the data items and fields we track, sources, open checks, the tech stack and the changelog.</p>
@@ -91,7 +91,7 @@ code{font:12px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--
   </div>
   <p class="note">Research project only, not investment advice.</p>
 </main></div>
-<footer>Stock Notifier · ml_ops_finance · <code>/data-lab</code> and <code>/info-box</code> are separate flows</footer>
+<footer>Stock Notifier · ml_ops_finance · Data Laboratory and Information Box are separate flows</footer>
 
 <script>
 /* Live stats for the Data Laboratory tile (read-only API in app/main.py). Page works without it. */
@@ -100,7 +100,7 @@ code{font:12px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--
   const ago = iso => { if(!iso) return '—'; const m=(Date.now()-new Date(iso))/6e4;
     return m<1?'just now':m<60?Math.round(m)+' min ago':m<1440?Math.round(m/60)+' h ago':Math.round(m/1440)+' d ago'; };
   const big = v => v>=1e7?(v/1e7).toFixed(2)+' Cr':v>=1e5?(v/1e5).toFixed(2)+' L':v>=1e3?(v/1e3).toFixed(1)+'k':String(v);
-  fetch('/api/data/manifest').then(r => r.ok ? r.json() : Promise.reject()).then(m => {
+  fetch('api/data/manifest').then(r => r.ok ? r.json() : Promise.reject()).then(m => {
     const ds = Object.values(m.manifest||{});
     const rows = ds.reduce((a,d) => a + ((d.validation||{}).rows || d.rows || 0), 0);
     const issues = ds.reduce((a,d) => a + ((d.validation||{}).issues||[]).length + (d.missing_tickers||d.missing_series||[]).length, 0);

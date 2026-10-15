@@ -13,6 +13,11 @@ Read-only data API (used by the Data Lab page; reads data/raw/*.parquet + manife
   /api/data/macro                              -> per-series summary (no ?series)
   /api/data/macro?series=a,b&start=&end=
 
+Base path (reverse proxy): set BASE_PATH=/stock-notifier to serve everything above under
+that prefix (/stock-notifier/, /stock-notifier/data-lab, /stock-notifier/api/data/...). The bare
+prefix redirects to the trailing-slash URL; /healthz is always also served at the root. The HTML
+pages use relative URLs only, so they work at / and under any prefix (stripped or passed through).
+
 The API never writes to the data folder. pandas/pyarrow are imported lazily so the
 pages still load (and say "no data yet") when the data stack is not installed.
 """
@@ -25,8 +30,8 @@ from functools import lru_cache
 from typing import Optional
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException, Query
-from fastapi.responses import FileResponse
+from fastapi import APIRouter, FastAPI, HTTPException, Query
+from fastapi.responses import FileResponse, RedirectResponse
 
 ROOT = Path(os.getenv("WEB_ROOT", Path(__file__).resolve().parent.parent))
 INDEX = ROOT / "index.html"
@@ -40,27 +45,27 @@ MAX_TICKERS = 4        # compare at most 4 lines at once
 TAIL_ROWS = 20
 NO_CACHE = {"Cache-Control": "no-cache"}
 
-app = FastAPI(title="ml_ops_finance", docs_url="/api/docs", redoc_url=None)
+router = APIRouter()   # all pages + API; mounted under BASE_PATH by create_app()
 
 
 # ----------------------------------------------------------------- pages
-@app.get("/", include_in_schema=False)
+@router.get("/", include_in_schema=False)
 def root() -> FileResponse:
     # Landing page: links to the Data Laboratory and the Information Box (separate flows).
     return FileResponse(INDEX, media_type="text/html", headers=NO_CACHE)
 
 
-@app.get("/data-lab", include_in_schema=False)
+@router.get("/data-lab", include_in_schema=False)
 def data_lab() -> FileResponse:
     return FileResponse(DATA_LAB, media_type="text/html", headers=NO_CACHE)
 
 
-@app.get("/info-box", include_in_schema=False)
+@router.get("/info-box", include_in_schema=False)
 def info_box() -> FileResponse:
     return FileResponse(INFO_BOX, media_type="text/html", headers=NO_CACHE)
 
 
-@app.get("/healthz")
+@router.get("/healthz")
 def healthz() -> dict:
     return {"status": "ok", "index": INDEX.exists(), "data_lab": DATA_LAB.exists(), "info_box": INFO_BOX.exists(),
             "data_dir": DATA_DIR.exists()}
@@ -158,7 +163,7 @@ def _market(market: str) -> str:
 
 
 # ----------------------------------------------------------------- data API
-@app.get("/api/data/manifest", tags=["data"])
+@router.get("/api/data/manifest", tags=["data"])
 def manifest() -> dict:
     """What has been pulled: manifest.json plus the data files actually on disk."""
     m = DATA_DIR / "manifest.json"
@@ -169,7 +174,7 @@ def manifest() -> dict:
             "manifest": json.loads(m.read_text()) if m.exists() else {}}
 
 
-@app.get("/api/data/universe/{market}", tags=["data"])
+@router.get("/api/data/universe/{market}", tags=["data"])
 def universe(market: str) -> dict:
     """Latest constituent snapshot, flagged with whether price data exists for each ticker."""
     pd = _pd()
@@ -190,7 +195,7 @@ def universe(market: str) -> dict:
             "with_prices": sum(r["has_prices"] for r in rows), "rows": rows}
 
 
-@app.get("/api/data/prices/{market}", tags=["data"])
+@router.get("/api/data/prices/{market}", tags=["data"])
 def prices(market: str,
            tickers: Optional[str] = Query(None, description="comma-separated, max 4; omit for a summary"),
            start: Optional[str] = None, end: Optional[str] = None) -> dict:
@@ -215,7 +220,7 @@ def prices(market: str,
     return {"market": market, "series": out}
 
 
-@app.get("/api/data/macro", tags=["data"])
+@router.get("/api/data/macro", tags=["data"])
 def macro(series: Optional[str] = Query(None, description="comma-separated, max 4; omit for a summary"),
           start: Optional[str] = None, end: Optional[str] = None) -> dict:
     df = _load("macro/macro_daily.parquet")
@@ -243,3 +248,30 @@ def macro(series: Optional[str] = Query(None, description="comma-separated, max 
                      "points": _records(_thin(d), ["date", "value"]),
                      "tail": _records(d.tail(TAIL_ROWS).iloc[::-1], ["date", "value"])}
     return {"series": out}
+
+
+# ----------------------------------------------------------------- app factory
+def normalise_base_path(base: Optional[str]) -> str:
+    """'' or '/' -> '' ; 'stock-notifier/' -> '/stock-notifier'."""
+    base = (base or "").strip().strip("/")
+    return f"/{base}" if base else ""
+
+
+def create_app(base_path: Optional[str] = None) -> FastAPI:
+    base = normalise_base_path(base_path)
+    api = FastAPI(title="ml_ops_finance", docs_url=f"{base}/api/docs", openapi_url=f"{base}/openapi.json",
+                  redoc_url=None)
+    if base:
+        @api.get(base, include_in_schema=False)
+        def _bare_prefix() -> RedirectResponse:
+            # /stock-notifier -> /stock-notifier/ so the pages' relative links resolve under the prefix
+            return RedirectResponse(url=f"{base}/", status_code=307)
+
+        api.add_api_route("/healthz", healthz, methods=["GET"])   # root health check (Docker HEALTHCHECK)
+    api.include_router(router, prefix=base)
+    api.state.base_path = base
+    return api
+
+
+BASE_PATH = normalise_base_path(os.getenv("BASE_PATH"))
+app = create_app(BASE_PATH)

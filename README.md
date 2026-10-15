@@ -117,6 +117,30 @@ The data API is read-only. It reads `data/raw/` (override with `DATA_DIR`).
 
 ---
 
+## Base path / reverse proxy
+
+To serve the app under a sub-path of another domain (for example `https://example.com/stock-notifier/`), set `BASE_PATH`:
+
+```bash
+BASE_PATH=/stock-notifier uvicorn app.main:app --port 8080
+# or in docker-compose.yml: environment: - BASE_PATH=/stock-notifier
+```
+
+Then everything lives under the prefix: `/stock-notifier/` (landing page), `/stock-notifier/data-lab`, `/stock-notifier/info-box`, `/stock-notifier/api/data/*` and `/stock-notifier/api/docs`. The bare `/stock-notifier` redirects to `/stock-notifier/`. `/healthz` is also served at the root for the Docker HEALTHCHECK.
+
+Example nginx rule that passes the prefix through to the container:
+
+```nginx
+location /stock-notifier/ {
+    proxy_pass http://stock-notifier:8080;   # no trailing slash: keeps /stock-notifier/ in the path
+    proxy_set_header Host $host;
+}
+```
+
+The pages use **relative URLs only** (`data-lab`, `info-box`, `./`, `api/data/...`), so they also work when a proxy strips the prefix and the app runs with no `BASE_PATH`. Keep new links relative.
+
+---
+
 ## Deploy (GCP Cloud Run)
 
 The image listens on `$PORT` (default `8080`), runs as a non-root user and has a `HEALTHCHECK`, so it runs on Cloud Run as is:
