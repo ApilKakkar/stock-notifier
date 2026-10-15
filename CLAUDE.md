@@ -133,3 +133,6 @@ Supersedes "`/` → redirect to `/data-lab`".
 - With a prefix, the bare `/stock-notifier` redirects (307) to `/stock-notifier/`, `/healthz` is served at both the root and the prefix, and the docs and OpenAPI paths move under the prefix.
 - **Pages must use relative URLs only**: `href="data-lab"`, `href="info-box"`, `href="./"` (home), `fetch('api/data/...')`. Never start a link or fetch with `/`. Hash deep links (`#/...`) are fine. `tests/test_app.py` fails if an absolute `/data-lab`, `/info-box`, `/api` or `href="/"` creeps back in.
 - New routes go on `router` (not `app`), so they pick up the prefix automatically.
+
+## Home icon (added 2026-10-16)
+Every page (Stock Notifier, Data Lab, Info Box) has a small house-icon button in the top-right corner (`a.homeico`) linking to https://apilkakkar.com (same tab, tooltip "apilkakkar.com"). It is an external link, the only absolute `href` allowed; all in-app links stay relative. Keep it in the top-right on new pages, reusing the `.homeico` styles.

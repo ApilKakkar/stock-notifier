@@ -54,6 +54,8 @@ def test_pages_use_relative_urls_only():
         html = page.read_text()
         assert 'href="/"' not in html and 'href="/data-lab"' not in html and 'href="/info-box"' not in html, page
         assert not re.search(r"""(fetch|api)\(\s*['"`]/""", html), page            # no fetch('/...') or api('/...')
+        # the only allowed absolute link is the external home icon
+        assert html.count('href="https://apilkakkar.com"') == 1 and 'class="homeico"' in html, page
 
 
 @pytest.mark.parametrize("base", ["/stock-notifier", "stock-notifier/", "/stock-notifier/"])

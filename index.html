@@ -25,7 +25,10 @@ body{margin:0;color:var(--ink);font:15px/1.6 "Urbanist",-apple-system,BlinkMacSy
   background:linear-gradient(180deg,var(--page) 0,var(--page2) 480px,var(--page) 100%);min-height:100vh;display:flex;flex-direction:column}
 .hero{padding:22px 24px 34px}
 .wrap{max-width:1040px;margin:0 auto}
+.toprow{display:flex;align-items:center;justify-content:space-between;gap:16px}
 .logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:17px;letter-spacing:-.02em}
+.homeico{flex:none;width:36px;height:36px;display:grid;place-items:center;border:1px solid var(--teal-mid);border-radius:3px;background:var(--glass);color:var(--teal);text-decoration:none;transition:background .15s,transform .15s}
+.homeico:hover{background:var(--teal-soft)} .homeico:active{transform:scale(.94)} .homeico:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .logo i{width:26px;height:26px;border-radius:8px;background:var(--dark);display:grid;place-items:center;color:var(--accent);font-style:normal;font-size:13px}
 h1{margin:34px 0 0;font-size:clamp(32px,5vw,48px);line-height:1.1;letter-spacing:-.03em;font-weight:700}
 .sub{color:var(--muted);margin:10px 0 0;max-width:640px;font-size:16px}
@@ -64,7 +67,8 @@ code{font:12px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--
 </head>
 <body>
 <header class="hero"><div class="wrap">
-  <div class="logo"><i>◆</i>Stock Notifier</div>
+  <div class="toprow"><div class="logo"><i>◆</i>Stock Notifier</div>
+  <a class="homeico" href="https://apilkakkar.com" title="apilkakkar.com" aria-label="Go to apilkakkar.com"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/><path d="M10 19.5v-5h4v5"/></svg></a></div>
   <h1>Stock Notifier</h1>
   <p class="sub">Systematic trading experiments on NIFTY 50 and S&amp;P 100 (plus gold, oil, crypto), honestly tested against a plain NIFTY index fund after costs, taxes and FX — with explainable signals.</p>
 </div></header>
