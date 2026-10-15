@@ -1,0 +1,545 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Data Laboratory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600;700&display=swap" rel="stylesheet"><!-- optional font; falls back to system fonts offline -->
+<style>
+:root{
+  color-scheme:light;
+  --page:#c6e0e4; --page2:#dcecee; --cream:#fbf7f3; --surface:#ffffff;
+  --ink:#10332e; --muted:#566f6b; --line:#e5eae7;
+  --dark:#0d3531; --dark-ink:#e9f6f1; --dark-muted:#a8cfc6; --accent:#3fb36b;
+  --teal:#2a7a82; --teal-soft:#e4f1f2; --teal-mid:#bcdadd;
+  --ok:#1d7a4a; --okbg:#dff3e7; --warn:#8a5a00; --warnbg:#fbefd2;
+  --shadow:0 10px 30px rgba(16,51,46,.08); --glass:rgba(255,255,255,.6);
+  --swirl:#fff; --swirl-o:.45; --ease:cubic-bezier(.2,.8,.2,1); --dur:.5s;
+}
+*{box-sizing:border-box}
+body{margin:0;color:var(--ink);font:15px/1.6 "Urbanist",-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif;
+  background:linear-gradient(180deg,var(--page) 0,var(--page2) 480px,var(--page) 100%);min-height:100vh}
+button{font:inherit;color:inherit}
+/* hero */
+.hero{position:relative;overflow:hidden;padding:24px 24px 30px}
+.swirl{position:absolute;pointer-events:none;opacity:var(--swirl-o)}
+.s1{left:-60px;top:120px;width:240px} .s2{right:-50px;top:20px;width:260px}
+.wrap{position:relative;z-index:1;max-width:1040px;margin:0 auto}
+.brand{display:flex;align-items:center;justify-content:space-between;margin-bottom:26px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:22px;letter-spacing:-.02em}
+.logo i{width:30px;height:30px;border-radius:9px;background:var(--dark);display:grid;place-items:center;color:var(--accent);font-style:normal;font-size:15px}
+.pill{font-size:12px;font-weight:600;background:var(--glass);border:1px solid var(--teal-mid);padding:6px 12px;border-radius:999px}
+h1{margin:0;text-align:center;font-size:clamp(30px,5vw,46px);line-height:1.12;letter-spacing:-.025em;font-weight:700}
+.sub{text-align:center;color:var(--muted);margin:10px auto 16px;max-width:620px}
+.stats{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-bottom:18px}
+.stats span{font-size:12.5px;background:var(--glass);border:1px solid var(--teal-mid);padding:5px 12px;border-radius:3px}
+.stats b{font-weight:700}
+.searchwrap{display:flex;justify-content:center}
+.search{width:100%;max-width:440px;padding:12px 18px;border:1px solid var(--teal-mid);border-radius:999px;background:var(--glass);color:var(--ink);font:inherit;font-size:14px;box-shadow:var(--shadow)}
+.search:focus{outline:2px solid var(--accent);border-color:transparent}
+/* compact top bar (sub-page: no hero) */
+.topbar{padding:10px 24px}
+.topbar .bar{max-width:1040px;margin:0 auto;display:flex;align-items:center;gap:16px}
+.topbar .logo{font-size:17px;white-space:nowrap;flex:none}
+@media (max-width:720px){.topbar{padding:10px 16px} .topbar .search{max-width:none;flex:1;min-width:0}} .topbar .logo i{width:26px;height:26px;border-radius:8px;font-size:13px}
+.topbar .search{margin-left:auto;max-width:320px;padding:8px 16px;box-shadow:none}
+/* band + toolbar */
+.band{background:var(--cream);border-radius:22px 22px 0 0;box-shadow:0 -10px 40px rgba(16,51,46,.06);min-height:calc(100vh - 56px)}
+main{max-width:1040px;margin:0 auto;padding:18px 24px 40px}
+.toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.nb{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 13px;border-radius:3px;border:1px solid var(--teal-mid);background:var(--surface);cursor:pointer;font-size:13px;font-weight:600;transition:background .15s,transform .15s}
+.nb:hover:not(:disabled){background:var(--teal-soft)} .nb:active:not(:disabled){transform:scale(.96)}
+.nb:disabled{opacity:.4;cursor:default}
+.nb.primary{background:var(--dark);color:#fff;border-color:var(--dark);
+  clip-path:polygon(0 0,100% 0,100% calc(100% - 7px),calc(100% - 7px) calc(100% - 7px),calc(100% - 7px) 100%,0 100%)}
+.nb.primary:hover:not(:disabled){background:var(--dark);filter:brightness(1.15)}
+.crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin-left:6px;font-size:13.5px;color:var(--muted)}
+.crumbs a{color:var(--teal);text-decoration:none;font-weight:600;cursor:pointer}
+.crumbs a:hover{text-decoration:underline} .crumbs .sep{opacity:.5} .crumbs .here{color:var(--ink);font-weight:700}
+.depth{margin-left:auto;display:flex;gap:5px}
+.depth i{width:8px;height:8px;border-radius:2px;background:var(--teal-mid)} .depth i.on{background:var(--accent)}
+/* stage + views */
+.stage{position:relative;perspective:1200px}
+.view{will-change:transform,opacity}
+.vhead{margin:0 0 16px}
+.vhead h2{font-size:26px;letter-spacing:-.02em;margin:0;display:flex;align-items:center;gap:10px}
+.vhead h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--accent)}
+.vhead p{margin:4px 0 0;color:var(--muted)}
+.grid4{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid4.n3 .card:nth-child(3){grid-column:span 2}
+.card{position:relative;text-align:left;cursor:pointer;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:20px 22px 56px;min-height:200px;
+  box-shadow:0 4px 18px rgba(16,51,46,.05);transition:transform .2s var(--ease),box-shadow .2s;animation:pop .45s var(--ease) both;animation-delay:var(--d,0ms)}
+.card:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+.card:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.card.dark{background:var(--dark);border-color:var(--dark);color:var(--dark-ink)}
+.card.dark p,.card.dark .eyebrow{color:var(--dark-muted)}
+.eyebrow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:6px}
+.card.dark .eyebrow .count{color:var(--accent)}
+.card h3{margin:0 0 6px;font-size:21px;letter-spacing:-.02em;line-height:1.2}
+.card p{margin:0;color:var(--muted);font-size:14px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.chips span{font-size:12px;padding:3px 9px;border-radius:999px;background:var(--teal-soft);color:var(--teal);font-weight:600}
+.card.dark .chips span{background:rgba(255,255,255,.08);color:var(--dark-ink)}
+.go{position:absolute;right:16px;bottom:14px;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:var(--surface);border:1px solid var(--line);font-size:17px;box-shadow:var(--shadow);transition:transform .2s var(--ease)}
+.card:hover .go{transform:translateX(3px)}
+.card.dark .go{background:var(--accent);border-color:var(--accent);color:var(--dark)}
+code{font:12px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--teal-soft);color:var(--teal);padding:1px 6px;border-radius:5px;text-transform:none;letter-spacing:0;overflow-wrap:anywhere}
+.card.dark code{background:rgba(255,255,255,.1);color:var(--accent)}
+.tag{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.t-dec{background:var(--okbg);color:var(--ok)} .t-chk{background:var(--warnbg);color:var(--warn)}
+.t-idea{background:var(--teal-soft);color:var(--teal)} .t-later{background:var(--line);color:var(--muted)}
+/* leaf detail */
+.detail{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:28px 30px;box-shadow:var(--shadow);animation:pop .45s var(--ease) both}
+.detail h3{font-size:30px;letter-spacing:-.025em;margin:4px 0 8px;line-height:1.15}
+.detail .lead{font-size:16.5px;color:var(--ink);margin:0 0 18px;max-width:760px}
+.facts{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin:0 0 18px}
+.facts div{background:var(--teal-soft);border-radius:12px;padding:10px 14px}
+.facts dt{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--teal)}
+.facts dd{margin:2px 0 0;font-size:14px}
+table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid var(--line);border-radius:14px;overflow:hidden;font-size:14px;margin:0 0 18px}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--teal-soft);color:var(--teal);font-weight:700;font-size:11.5px;text-transform:uppercase;letter-spacing:.06em}
+tr:last-child td{border-bottom:0}
+.tw{overflow-x:auto}
+ul.log{margin:0 0 18px;padding-left:20px;color:var(--muted)} ul.log b{color:var(--ink)} ul.log li{margin-bottom:6px}
+.sibs{border-top:1px solid var(--line);padding-top:14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;color:var(--muted)}
+.sibs button{border:1px solid var(--teal-mid);background:var(--glass);border-radius:999px;padding:5px 12px;cursor:pointer;font-size:12.5px;font-weight:600}
+.sibs button:hover{background:var(--teal-soft)} .sibs button.cur{background:var(--dark);color:#fff;border-color:var(--dark)}
+/* search results */
+.results{display:flex;flex-direction:column;gap:8px}
+.res{display:flex;justify-content:space-between;gap:12px;align-items:center;text-align:left;cursor:pointer;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 16px;animation:pop .3s var(--ease) both;animation-delay:var(--d,0ms)}
+.res:hover{border-color:var(--accent)}
+.res small{display:block;color:var(--muted);font-size:12px} .res b{font-size:15px}
+.empty{color:var(--muted);padding:30px 0;text-align:center}
+.legend{margin-top:26px;font-size:12.5px;color:var(--muted);display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+footer{padding:24px;color:var(--muted);font-size:12.5px;text-align:center;background:linear-gradient(180deg,var(--cream),var(--page2))}
+/* animations */
+@keyframes pop{from{opacity:0;transform:translateY(10px) scale(.98)}}
+@keyframes inLeave{to{opacity:0;transform:scale(1.5);filter:blur(3px)}}
+@keyframes inEnter{from{opacity:0;transform:scale(.3)}}
+@keyframes outLeave{to{opacity:0;transform:scale(.3)}}
+@keyframes outEnter{from{opacity:0;transform:scale(1.5);filter:blur(3px)}}
+@keyframes sideLeaveL{to{opacity:0;transform:translateX(-60px) rotateY(8deg)}}
+@keyframes sideEnterR{from{opacity:0;transform:translateX(60px) rotateY(-8deg)}}
+@keyframes sideLeaveR{to{opacity:0;transform:translateX(60px) rotateY(-8deg)}}
+@keyframes sideEnterL{from{opacity:0;transform:translateX(-60px) rotateY(8deg)}}
+.leave{position:absolute;left:0;right:0;top:0;pointer-events:none;z-index:2}
+.leave-in{animation:inLeave var(--dur) var(--ease) forwards}
+.enter-in{animation:inEnter var(--dur) var(--ease) both}
+.leave-out{animation:outLeave var(--dur) var(--ease) forwards}
+.enter-out{animation:outEnter var(--dur) var(--ease) both}
+.leave-next{animation:sideLeaveL var(--dur) var(--ease) forwards} .enter-next{animation:sideEnterR var(--dur) var(--ease) both}
+.leave-prev{animation:sideLeaveR var(--dur) var(--ease) forwards} .enter-prev{animation:sideEnterL var(--dur) var(--ease) both}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (max-width:720px){
+  .hero{padding:20px 16px 24px} main{padding:18px 16px 40px} .band{border-radius:26px 26px 0 0}
+  .grid4{grid-template-columns:1fr} .grid4.n3 .card:nth-child(3){grid-column:auto}
+  .card{min-height:0} .depth{display:none} .detail{padding:22px 20px} .detail h3{font-size:24px}
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="bar">
+    <div class="logo"><i>◆</i>Data Lab</div>
+    <input class="search" id="q" type="search" placeholder="Search everything… (ROE, VIX, tax)" title="Press / to focus" autocomplete="off">
+  </div>
+</header>
+
+<div class="band"><main>
+  <div class="toolbar">
+    <button class="nb" id="bk" title="Back (Alt+←)">← Back</button>
+    <button class="nb" id="fw" title="Forward (Alt+→)">Forward →</button>
+    <button class="nb" id="up" title="Up one level (Esc)">↑ Up</button>
+    <button class="nb primary" id="home" title="Home">⌂ Home</button>
+    <nav class="crumbs" id="crumbs" aria-label="Breadcrumb"></nav>
+    <div class="depth" id="depth" aria-hidden="true"></div>
+  </div>
+  <div class="stage" id="stage" aria-live="polite"></div>
+  <div class="legend">Legend:
+    <span class="tag t-dec">Decided</span><span class="tag t-chk">To check</span><span class="tag t-idea">Idea</span><span class="tag t-later">Later</span>
+    · Bloomberg field mnemonics are starting points — confirm with <code>FLDS</code> / <code>HELP HELP</code> at the terminal.
+  </div>
+</main></div>
+<footer>Data Laboratory · append-only notebook · content lives in the <code>DATA</code> tree in this file · see CLAUDE.md for update rules</footer>
+
+<script>
+/* ============================================================
+   DATA TREE — single source of truth for the Data Laboratory.
+   Rules (see CLAUDE.md): max 4 children per node (2–4 preferred);
+   when a 5th item arrives, regroup into sub-groups — never drop items.
+   Branch: {t, d, kids:[...]}
+   Leaf:   {t, d, tag:'dec'|'chk'|'idea'|'later' or [key,'Label'],
+            code?, facts?:[[label,value]], head?:[...], rows?:[[...]], list?:[html]}
+   ============================================================ */
+const DATA = {
+ t:'Data Laboratory', d:'Four pillars of the lab — pick one to drill in.',
+ kids:[
+  { t:'Universe & Scope', d:'What we trade, over which period, and what we must beat.',
+    kids:[
+      { t:'Universe', d:'Which stocks are in the game.',
+        kids:[
+          { t:'Prototype universe', tag:'dec', d:'NIFTY 50 (India) + S&P 100 (US). Prove the pipeline end-to-end before scaling.',
+            facts:[['India','NIFTY 50'],['US','S&P 100'],['Why','Small, liquid, fast to iterate']] },
+          { t:'Full universe', tag:'later', code:'INDX_MWEIGHT_HIST', d:'NIFTY 200 (skip NIFTY 500 — small caps too illiquid) + S&P 500. Use historical constituents incl. delisted names to avoid survivorship bias.',
+            facts:[['India','NIFTY 200'],['US','S&P 500'],['Must have','Historical constituents incl. delisted']] }
+        ]},
+      { t:'Time & frequency', d:'History length and data cadence.',
+        kids:[
+          { t:'Time span', tag:'dec', d:'2010 → 2026, daily. Covers the taper tantrum, 2015–16, 2018, the COVID crash and the 2022 hikes — enough regimes to stress-test.',
+            facts:[['Start','2010'],['End','2026'],['Regimes','2013, 2015–16, 2018, 2020, 2022']] },
+          { t:'Frequency', tag:'dec', d:'Daily prices; quarterly fundamentals. Rebalance weekly/monthly — frictions kill high-frequency ideas.',
+            facts:[['Prices','Daily'],['Fundamentals','Quarterly'],['Rebalance','Weekly / monthly']] }
+        ]},
+      { t:'Benchmark', tag:'dec', d:'Plain NIFTY 50 index fund (INR, net of costs). Every strategy must beat this after all frictions — costs, taxes, FX and LRS lag.',
+        facts:[['Benchmark','NIFTY 50 index fund'],['Currency','INR'],['Measured','Net of all frictions']] }
+    ]},
+
+  { t:'Data', d:'Prices, fundamentals, macro context and India-specific signals.',
+    kids:[
+      { t:'Prices & corporate actions', d:'Daily price fields and the events that distort them.',
+        kids:[
+          { t:'Daily price fields', d:'Core daily series to pull for every stock.',
+            kids:[
+              { t:'Price & volume', tag:'dec', d:'Raw daily trading data — the base of momentum, volatility and liquidity features.',
+                head:['Field','What it is','Why we need it'],
+                rows:[['PX_LAST','Closing price','Core price series; momentum, volatility features'],
+                      ['PX_VOLUME','Shares traded','Liquidity filter, slippage model, volume signals'],
+                      ['PX_OPEN / PX_HIGH / PX_LOW','OHLC','Next-open execution, range/volatility features']] },
+              { t:'Returns & size', tag:'dec', d:'Adjusted returns and size measures — needed for correct performance and the size factor.',
+                head:['Field','What it is','Why we need it'],
+                rows:[['TOT_RETURN_INDEX_GROSS_DVDS','Total-return index (splits + dividends adjusted)','Correct returns — raw prices drop on dividend/bonus dates'],
+                      ['CUR_MKT_CAP','Market capitalisation','Size factor, weighting, universe filter'],
+                      ['EQY_SH_OUT','Shares outstanding','Recompute market cap, catch dilution/buybacks']] }
+            ]},
+          { t:'Corporate actions', d:'Events that change share count or identity. Bloomberg CACS.',
+            kids:[
+              { t:'Splits & bonuses', tag:'dec', d:'Change share count without changing value. Must adjust prices or returns look like crashes.' },
+              { t:'Dividends', tag:'dec', d:'Cash paid out; price drops on ex-date. Captured by the total-return index; track yield separately.' },
+              { t:'Mergers, demergers, delistings', tag:'dec', code:'CACS', d:'Ticker changes and exits. Critical for survivorship-free history.' },
+              { t:'Buybacks / rights issues', tag:'idea', d:'Shift share count and signal management’s view on valuation.' }
+            ]}
+        ]},
+      { t:'Fundamentals', d:'Quarterly company metrics, joined point-in-time.',
+        kids:[
+          { t:'Valuation', d:'How expensive is the stock?',
+            kids:[
+              { t:'P/E', tag:'dec', code:'PE_RATIO', d:'Price ÷ earnings per share. How many rupees/dollars you pay for ₹1/$1 of profit. Low = cheap (or troubled).' },
+              { t:'P/B', tag:'dec', code:'PX_TO_BOOK_RATIO', d:'Price ÷ book value per share. Valuation vs net assets; most useful for banks and asset-heavy firms.' },
+              { t:'EV/EBITDA', tag:'dec', code:'CURRENT_EV_TO_T12M_EBITDA', d:'Enterprise value ÷ operating cash profit. Capital-structure-neutral valuation; compares firms with different debt.' }
+            ]},
+          { t:'Quality & risk', d:'How good and how fragile is the business?',
+            kids:[
+              { t:'ROE', tag:'dec', code:'RETURN_COM_EQY', d:'Net income ÷ shareholders’ equity. How efficiently the company turns owners’ money into profit — a quality signal.' },
+              { t:'Debt/Equity', tag:'dec', code:'TOT_DEBT_TO_TOT_EQY', d:'Total debt ÷ equity. Leverage and balance-sheet risk; high values hurt in rate-hike regimes.' },
+              { t:'Gross margin', tag:'dec', code:'GROSS_MARGIN', d:'(Revenue − COGS) ÷ revenue. Pricing power; stable margins = quality.' }
+            ]},
+          { t:'Growth & earnings', d:'Is the business growing, and beating expectations?',
+            kids:[
+              { t:'EPS', tag:'dec', code:'IS_EPS', d:'Earnings per share. Base for growth and earnings-surprise features.' },
+              { t:'Revenue & growth', tag:'dec', code:'SALES_REV_TURN', d:'Top-line sales and YoY/QoQ growth. Growth factor; harder to manipulate than earnings.' },
+              { t:'Consensus EPS', tag:'dec', code:'BEST_EPS', d:'Analyst consensus estimate. Actual − consensus = earnings surprise, a classic drift signal.' }
+            ]},
+          { t:'Rules, sources & classification', d:'How to join fundamentals safely and where to get them.',
+            kids:[
+              { t:'Point-in-time rule', tag:'dec', d:'Join fundamentals on the filing/announcement date, not period-end. If only period-end is known, lag 45–60 days. Otherwise: look-ahead bias.',
+                facts:[['Join key','Filing / announcement date'],['Fallback','Period-end + 45–60 days'],['Avoids','Look-ahead bias']] },
+              { t:'Free fundamentals — India', tag:'idea', d:'Screener.in Excel export (per company, for validation) and NSE/BSE XBRL filings (automatable, include filing dates).',
+                facts:[['Validate','Screener.in export'],['Automate','NSE/BSE XBRL filings']] },
+              { t:'Free fundamentals — US', tag:'dec', code:'edgartools', d:'SEC EDGAR XBRL API / edgartools — official, full history, includes the filed date.',
+                facts:[['Source','SEC EDGAR XBRL'],['Point-in-time','filed date included']] },
+              { t:'Sector', tag:'dec', code:'GICS_SECTOR_NAME', d:'Industry classification. Sector-neutral ranking; avoid accidentally betting on one sector.' }
+            ]}
+        ]},
+      { t:'Market & macro', d:'Context series for India, the US and commodities.',
+        kids:[
+          { t:'India', d:'Indian market regime, rates and currency.',
+            kids:[
+              { t:'Markets', d:'Benchmarks and fear gauge.',
+                kids:[
+                  { t:'NIFTY 50 / Bank NIFTY', tag:'dec', d:'Market and banking-sector benchmarks; regime and beta features.', facts:[['Source','Bloomberg, NSE, broker API']] },
+                  { t:'India VIX', tag:'dec', d:'Expected 30-day NIFTY volatility — the “fear gauge”; de-risk trigger.', facts:[['Source','NSE, Bloomberg']] }
+                ]},
+              { t:'Rates & FX', d:'Cost of money and the rupee.',
+                kids:[
+                  { t:'RBI policy (repo) rate', tag:'dec', d:'Cost of money; hikes pressure valuations and leveraged firms.', facts:[['Source','RBI DBIE, Bloomberg']] },
+                  { t:'India 10Y G-sec yield', tag:'dec', d:'Risk-free long rate; discount rate for equities.', facts:[['Source','Bloomberg, RBI']] },
+                  { t:'USD/INR', tag:'dec', code:'USDINR Curncy', d:'Converts US returns to INR; rupee weakness adds to US returns.', facts:[['Source','Bloomberg, Alpha Vantage']] }
+                ]}
+            ]},
+          { t:'US', d:'US market regime, rates and event calendar.',
+            kids:[
+              { t:'Markets', d:'Benchmark and volatility.',
+                kids:[
+                  { t:'S&P 500 / S&P 100', tag:'dec', d:'US benchmark and prototype universe.', facts:[['Source','Bloomberg, yfinance, Tiingo']] },
+                  { t:'VIX', tag:'dec', code:'VIX Index', d:'Expected 30-day S&P volatility; global risk-on/off signal.', facts:[['Bloomberg','VIX Index'],['FRED','VIXCLS']] }
+                ]},
+              { t:'Rates', d:'Risk-free and long rates.',
+                kids:[
+                  { t:'3M T-bill', tag:'dec', code:'USGG3M Index', d:'US risk-free rate for the Sharpe ratio and cash return.', facts:[['FRED','DTB3'],['Bloomberg','USGG3M Index']] },
+                  { t:'US 10Y Treasury yield', tag:'dec', code:'USGG10YR Index', d:'Global discount rate; drives growth-vs-value rotation.', facts:[['FRED','DGS10'],['Bloomberg','USGG10YR Index']] }
+                ]},
+              { t:'FOMC & earnings dates', tag:'dec', code:'ECO', d:'Event calendar; avoid trading into known volatility.', facts:[['Source','Bloomberg ECO, Fed site']] }
+            ]},
+          { t:'Commodities & crypto', d:'Diversifiers and macro shocks.',
+            kids:[
+              { t:'Gold', tag:'dec', code:'XAU Curncy', d:'Crisis hedge. XAU spot plus GOLDBEES / MCX gold for the INR view (includes import duty).' },
+              { t:'Oil', tag:'dec', code:'CO1 Comdty', d:'India is a big importer — oil shocks hit INR and margins. Brent CO1 Comdty, WTI CL1 Comdty (roll-adjusted).', facts:[['Brent','CO1 Comdty'],['WTI','CL1 Comdty']] },
+              { t:'Crypto (BTC, ETH)', tag:'dec', code:'ccxt', d:'Free via Binance / ccxt. History only from ~2015–17 — align backtest windows.' },
+              { t:'Silver', tag:'later', code:'XAG Curncy', d:'Optional diversifier.' }
+            ]}
+        ]},
+      { t:'India signals', d:'Local data that big global models tend to ignore.',
+        kids:[
+          { t:'Flows', d:'Who is buying and selling.',
+            kids:[
+              { t:'FII / DII daily flows', tag:'idea', d:'Net buying by foreign vs domestic institutions (NSE daily). Persistent FII selling often precedes weakness.', facts:[['Source','NSE daily']] },
+              { t:'AMFI SIP inflows', tag:'idea', d:'Monthly retail mutual-fund inflows — a retail sentiment proxy.', facts:[['Source','AMFI monthly']] },
+              { t:'Bulk & block deals', tag:'idea', d:'Large disclosed trades by big players (NSE/BSE daily).', facts:[['Source','NSE / BSE daily']] }
+            ]},
+          { t:'Disclosures & text', d:'Insider behaviour and management tone.',
+            kids:[
+              { t:'Promoter holding & pledging', tag:'idea', d:'Rising pledges = promoter stress; insider buying = conviction. From shareholding filings.' },
+              { t:'Concall sentiment (LLM)', tag:'later', d:'Score Indian earnings-call transcripts for tone and guidance changes.' }
+            ]}
+        ]}
+    ]},
+
+  { t:'Sources & Infrastructure', d:'Where data comes from, how trades execute, where compute runs.',
+    kids:[
+      { t:'India brokers', d:'Broker APIs for Indian prices and paper signals.',
+        kids:[
+          { t:'Fyers API v3', tag:['idea','Shortlist'], d:'India daily/intraday candles and websockets.', facts:[['Cost','Free with account']] },
+          { t:'Angel One SmartAPI', tag:['idea','Shortlist'], d:'India historical candles down to 1-minute.', facts:[['Cost','Free with account']] },
+          { t:'Upstox API v2', tag:['later','Backup'], d:'India REST + websocket.', facts:[['Cost','Free with account']] },
+          { t:'Zerodha Kite Connect', tag:['chk','Check price'], d:'Most mature India API.', facts:[['Cost','Paid (historical data add-on)']] }
+        ]},
+      { t:'US & execution', d:'US prices and how orders get placed.',
+        kids:[
+          { t:'Tiingo / yfinance', tag:['dec','Use'], d:'US daily prices.', facts:[['Cost','Free tier']] },
+          { t:'Interactive Brokers', tag:'later', d:'US execution and paper trading.', facts:[['Access','Account via LRS']] },
+          { t:'Vested', tag:['dec','Manual'], d:'US execution — manual, no retail API.', facts:[['Cost','Platform fees']] }
+        ]},
+      { t:'Data feeds', d:'Institutional and free public feeds.',
+        kids:[
+          { t:'Bloomberg (IIM lab)', tag:['chk','Book slots'], d:'Constituents, fundamentals, consensus and gap-filling.', facts:[['Cost','Institutional'],['Access','IIM Udaipur lab terminal']] },
+          { t:'NSE bhavcopy', tag:['dec','Fallback'], d:'Official EOD dump.', facts:[['Cost','Free, no auth']] },
+          { t:'SEC EDGAR + FRED', tag:['dec','Use'], d:'US fundamentals (EDGAR) and US macro (FRED).', facts:[['Cost','Free']] },
+          { t:'ccxt / Binance', tag:['dec','Use'], d:'Crypto prices.', facts:[['Cost','Free']] }
+        ]},
+      { t:'Compute & infra', d:'Where things run — local first, cloud later.',
+        kids:[
+          { t:'Local · M5 MacBook Air', tag:'dec', d:'Enough for the prototype: Polars + DuckDB + Parquet, LightGBM, MLflow. Fanless — long sweeps throttle.' },
+          { t:'Scheduling', tag:'idea', d:'GitHub Actions cron or GCP Cloud Scheduler → Cloud Run. India job ~16:30 IST, US job ~07:00 IST.' },
+          { t:'GCP scale-up', tag:'later', d:'BigQuery for the full universe, Vertex AI for hyperparameter sweeps / pipelines, GCS for Parquet. Or Colab for ad-hoc GPU.' },
+          { t:'Same feature code', tag:['dec','Principle'], d:'One feature module for backtest and live — prevents train/serve skew.' }
+        ]}
+    ]},
+
+  { t:'Strategy & Roadmap', d:'Experiments, principles, open checks and history.',
+    kids:[
+      { t:'Experiments', d:'What to test first.',
+        kids:[
+          { t:'Equity factors', d:'Single-market stock-selection strategies.',
+            kids:[
+              { t:'Exp 1 · 12-1 momentum', tag:'idea', d:'Top-10 NIFTY 50 by 12-month return (skip last month), monthly rebalance vs buy-and-hold.' },
+              { t:'Exp 2 · Quality + value', tag:'idea', d:'Rank on ROE, D/E, EV/EBITDA; sector-neutral; quarterly rebalance.' },
+              { t:'Exp 3 · Low-volatility', tag:'idea', d:'Lowest 1-year volatility names — target similar return with smaller drawdowns.' }
+            ]},
+          { t:'Allocation & regime', d:'Cross-asset and risk-switching ideas.',
+            kids:[
+              { t:'Exp 4 · Regime switch', tag:'idea', d:'De-risk to gold/cash when India VIX spikes or FII outflows persist.' },
+              { t:'Exp 5 · India + US mix in INR', tag:'idea', d:'Does US diversification beat NIFTY after FX spread, LRS lag, TCS and tax?' }
+            ]}
+        ]},
+      { t:'Principles', d:'Non-negotiables for every experiment.',
+        kids:[
+          { t:'Satellite allocation first', tag:'dec', d:'Core stays in index funds; the model runs on paper, then as a 5–10% satellite. Compare vs the index for 1–2 years before trusting it.' },
+          { t:'Tax-aware rebalancing', tag:['dec','Principle'], d:'India equity: STCG 20% (<12m), LTCG 12.5% above ₹1.25L. Foreign stocks: slab rate <24m, 12.5% after. Prefer holding winners past thresholds. Verify with a CA.',
+            facts:[['India STCG','20% (<12 months)'],['India LTCG','12.5% above ₹1.25L'],['Foreign','Slab <24m · 12.5% after']] },
+          { t:'Explainability is key', tag:['dec','Principle'], d:'Every signal ships with a plain-English rationale (top feature contributions via SHAP + an LLM summary). No black-box trades.' },
+          { t:'Honest validation', tag:['dec','Principle'], d:'Walk-forward only; one-day execution lag; costs + taxes + FX. Red flags: CAGR >25%, Sharpe >2, a smooth equity curve.' }
+        ]},
+      { t:'Open checks', d:'Things to verify or set up.',
+        kids:[
+          { t:'Access & accounts', d:'Unblock data and APIs.',
+            kids:[
+              { t:'WRDS / CRSP access at IIM Udaipur', tag:'chk', d:'Gold-standard survivorship-free US data.' },
+              { t:'Bloomberg booking & export policy', tag:'chk', d:'Download limits, USB/email export.' },
+              { t:'Broker account + API key', tag:['chk','To do'], d:'Fyers / Angel One — approval takes a few days.' }
+            ]},
+          { t:'Later checks', d:'Needed before scaling or going live.',
+            kids:[
+              { t:'Bloomberg ↔ free-source reconciliation', tag:'later', d:'Overlap period to avoid feature drift when switching sources.' },
+              { t:'SEBI retail algo framework', tag:'later', d:'Rules to check before automating live orders.' }
+            ]}
+        ]},
+      { t:'Changelog', tag:['dec','Log'], d:'History of changes to this Data Laboratory (newest first).',
+        list:[
+          '<b>2026-10-15</b> — Light day theme only: removed the automatic dark-mode palette and the dark first card; all cards are light.',
+          '<b>2026-10-15</b> — Removed the landing-style hero (big title, intro text, stat chips, swirls) and the root “Start here” heading: the page is now a sub-page that opens straight on the 4 cards, with a compact top bar (logo + search). Universe / span / benchmark info remains under Universe & Scope.',
+          '<b>2026-10-15</b> — Restructured into a 2×2 drill-down hierarchy (max 4 cards per level) with zoom in/out animations, Back / Forward / Up / Home controls, breadcrumbs and global search. All previous content carried over; hero stat tiles became stat chips.',
+          '<b>2026-10-15</b> — Restyled with the Syntix-style theme (pale teal gradient, cream sections, dark-teal accents, green highlight, notched active chips). Content unchanged.',
+          '<b>2026-10-15</b> — Page created: scope, daily & quarterly fields, corporate actions, India/US macro, commodities, India signals, brokers, experiments, infra, open checks.'
+        ]}
+    ]}
+ ]};
+
+/* ============================ engine ============================ */
+const TAGS={dec:'Decided',chk:'To check',idea:'Idea',later:'Later'};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const tagHTML=t=>{ if(!t) return ''; const [k,l]=Array.isArray(t)?t:[t,TAGS[t]]; return `<span class="tag t-${k}">${esc(l)}</span>`; };
+const nodeAt=p=>p.reduce((n,i)=>n.kids[i],DATA);
+const leafCount=n=>n.kids?n.kids.reduce((a,k)=>a+leafCount(k),0):1;
+const same=(a,b)=>a.length===b.length&&a.every((v,i)=>v===b[i]);
+const isPrefix=(a,b)=>a.length<b.length&&a.every((v,i)=>v===b[i]);
+const valid=p=>{ let n=DATA; for(const i of p){ if(!Number.isInteger(i)||!n.kids||!n.kids[i]) return false; n=n.kids[i]; } return true; };
+
+let cur=[], back=[], fwd=[], searching=false;
+
+function cardHTML(k){
+  const go='<span class="go" aria-hidden="true">→</span>';
+  if(k.kids){
+    const allLeaf=k.kids.every(c=>!c.kids), n=leafCount(k);
+    const eb=allLeaf?`<span class="count">${n} items</span>`:`<span class="count">${k.kids.length} groups · ${n} items</span>`;
+    return `<div class="eyebrow">${eb}</div><h3>${esc(k.t)}</h3><p>${esc(k.d||'')}</p>
+      <div class="chips">${k.kids.map(c=>`<span>${esc(c.t)}</span>`).join('')}</div>${go}`;
+  }
+  return `<div class="eyebrow">${tagHTML(k.tag)}${k.code?`<code>${esc(k.code)}</code>`:''}</div><h3>${esc(k.t)}</h3><p>${esc(k.d||'')}</p>${go}`;
+}
+
+function leafHTML(n,path){
+  const parent=nodeAt(path.slice(0,-1)), me=path[path.length-1];
+  let h=`<div class="detail"><div class="eyebrow">${tagHTML(n.tag)}${n.code?`<code>${esc(n.code)}</code>`:''}</div>
+    <h3>${esc(n.t)}</h3><p class="lead">${esc(n.d||'')}</p>`;
+  if(n.facts) h+=`<dl class="facts">${n.facts.map(([a,b])=>`<div><dt>${esc(a)}</dt><dd>${esc(b)}</dd></div>`).join('')}</dl>`;
+  if(n.rows) h+=`<div class="tw"><table>${n.head?`<tr>${n.head.map(x=>`<th>${esc(x)}</th>`).join('')}</tr>`:''}
+    ${n.rows.map(r=>`<tr>${r.map((c,i)=>`<td>${i===0?`<code>${esc(c)}</code>`:esc(c)}</td>`).join('')}</tr>`).join('')}</table></div>`;
+  if(n.list) h+=`<ul class="log">${n.list.map(x=>`<li>${x}</li>`).join('')}</ul>`;
+  if(parent.kids.length>1) h+=`<div class="sibs">Also in ${esc(parent.t)}:
+    ${parent.kids.map((s,j)=>`<button data-sib="${j}" class="${j===me?'cur':''}">${esc(s.t)}</button>`).join('')}</div>`;
+  return h+'</div>';
+}
+
+function viewFor(path){
+  const n=nodeAt(path), v=document.createElement('div'); v.className='view';
+  const head = path.length ? `<div class="vhead"><h2>${esc(n.t)}</h2>${n.d&&n.kids?`<p>${esc(n.d)}</p>`:''}</div>`
+                           : '';
+  if(n.kids){
+    v.innerHTML=head+`<div class="grid4 n${n.kids.length}"></div>`;
+    const g=v.querySelector('.grid4');
+    n.kids.forEach((k,i)=>{
+      const b=document.createElement('button'); b.className='card'; b.dataset.idx=i;
+      b.style.setProperty('--d',(i*70+120)+'ms'); b.innerHTML=cardHTML(k);
+      b.addEventListener('click',()=>go([...path,i],{origin:b}));
+      g.appendChild(b);
+    });
+  } else {
+    v.innerHTML=leafHTML(n,path);
+    v.querySelectorAll('[data-sib]').forEach(btn=>btn.addEventListener('click',()=>{
+      const j=+btn.dataset.sib, me=path[path.length-1]; if(j===me) return;
+      go([...path.slice(0,-1),j],{dir:j>me?'next':'prev'});
+    }));
+  }
+  return v;
+}
+
+function go(path,opt={}){
+  const wasSearching=searching;
+  if(searching){ $('#q').value=''; searching=false; }
+  if(same(path,cur) && !wasSearching) return;
+  back.push(cur); fwd=[];
+  const prev=cur; cur=path; show(prev,wasSearching?{...opt,instant:true}:opt);
+}
+
+function show(prev,opt={}){
+  const stage=$('#stage');
+  stage.querySelectorAll('.leave').forEach(e=>e.remove());
+  const old=stage.querySelector('.view');
+  const nv=viewFor(cur);
+  const dir=opt.dir || (isPrefix(prev,cur)?'in' : isPrefix(cur,prev)?'out' : cur.length>=prev.length?'next':'prev');
+  if(old && !opt.instant){
+    old.classList.add('leave');
+    stage.appendChild(nv);
+    const sr=stage.getBoundingClientRect(); let ox='50%', oy='120px', ref=null;
+    if(dir==='in') ref=opt.origin;
+    if(dir==='out') ref=nv.querySelector(`.card[data-idx="${prev[cur.length]}"]`);
+    if(ref){ const r=ref.getBoundingClientRect(); ox=(r.left+r.width/2-sr.left)+'px'; oy=(r.top+r.height/2-sr.top)+'px'; }
+    old.style.transformOrigin=nv.style.transformOrigin=`${ox} ${oy}`;
+    old.classList.add('leave-'+dir); nv.classList.add('enter-'+dir);
+    setTimeout(()=>{ old.remove(); nv.classList.remove('enter-'+dir); nv.style.transformOrigin=''; },560);
+  } else { stage.innerHTML=''; stage.appendChild(nv); }
+  chrome();
+  const top=stage.getBoundingClientRect().top; if(top<0) window.scrollBy({top:top-80,behavior:'smooth'});
+}
+
+function chrome(){
+  $('#bk').disabled=!back.length; $('#fw').disabled=!fwd.length;
+  $('#up').disabled=!cur.length||searching; $('#home').disabled=!cur.length&&!searching;
+  const c=$('#crumbs'); c.innerHTML='';
+  const parts=[{t:'Home',p:[]}]; let n=DATA; cur.forEach((i,k)=>{ n=n.kids[i]; parts.push({t:n.t,p:cur.slice(0,k+1)}); });
+  if(searching) parts.push({t:'Search results',p:null});
+  parts.forEach((x,i)=>{
+    if(i) c.insertAdjacentHTML('beforeend','<span class="sep">›</span>');
+    if(i===parts.length-1){ c.insertAdjacentHTML('beforeend',`<span class="here">${esc(x.t)}</span>`); }
+    else { const a=document.createElement('a'); a.textContent=x.t; a.addEventListener('click',()=>go(x.p)); c.appendChild(a); }
+  });
+  const d=$('#depth'); d.innerHTML='';
+  for(let i=0;i<5;i++) d.insertAdjacentHTML('beforeend',`<i class="${i<=cur.length?'on':''}"></i>`);
+  try{ history.replaceState(null,'','#/'+cur.join('/')); }catch(e){}
+}
+
+function jump(target,fromStack,toStack){
+  if(!fromStack.length) return;
+  const wasSearching=searching; if(searching){ $('#q').value=''; searching=false; }
+  toStack.push(cur); const prev=cur; cur=fromStack.pop(); show(prev,{instant:wasSearching});
+}
+$('#bk').onclick=()=>jump(null,back,fwd);
+$('#fw').onclick=()=>jump(null,fwd,back);
+$('#up').onclick=()=>{ if(cur.length) go(cur.slice(0,-1)); };
+$('#home').onclick=()=>{ if(searching){ $('#q').value=''; searching=false; show(cur,{instant:true}); return; } go([]); };
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT'){ if(e.key==='Escape'){ e.target.value=''; e.target.dispatchEvent(new Event('input')); e.target.blur(); } return; }
+  if(e.key==='Escape'||e.key==='Backspace'){ e.preventDefault(); $('#up').click(); }
+  else if(e.altKey&&e.key==='ArrowLeft'){ e.preventDefault(); $('#bk').click(); }
+  else if(e.altKey&&e.key==='ArrowRight'){ e.preventDefault(); $('#fw').click(); }
+  else if(e.key==='/'){ e.preventDefault(); $('#q').focus(); }
+});
+
+/* search across the whole tree */
+const INDEX=[];
+(function walk(n,p,trail){
+  if(p.length) INDEX.push({p,n,trail,text:[n.t,n.d,n.code,Array.isArray(n.tag)?n.tag[1]:TAGS[n.tag],
+    (n.facts||[]).flat().join(' '),(n.rows||[]).flat().join(' '),(n.list||[]).join(' ').replace(/<[^>]+>/g,'')].join(' ').toLowerCase()});
+  (n.kids||[]).forEach((k,i)=>walk(k,[...p,i],p.length?[...trail,n.t]:trail));
+})(DATA,[],[]);
+
+$('#q').addEventListener('input',e=>{
+  const q=e.target.value.trim().toLowerCase(), stage=$('#stage');
+  if(!q){ if(searching){ searching=false; show(cur,{instant:true}); } return; }
+  searching=true;
+  const hits=INDEX.filter(x=>q.split(/\s+/).every(w=>x.text.includes(w)))
+                  .sort((a,b)=>(!!a.n.kids)-(!!b.n.kids)).slice(0,40);
+  const v=document.createElement('div'); v.className='view';
+  v.innerHTML=`<div class="vhead"><h2>${hits.length} match${hits.length===1?'':'es'}</h2><p>for “${esc(e.target.value.trim())}” — open one to jump straight in.</p></div><div class="results"></div>`;
+  const r=v.querySelector('.results');
+  if(!hits.length) r.innerHTML='<div class="empty">Nothing found — try another word.</div>';
+  hits.forEach((h,i)=>{
+    const b=document.createElement('button'); b.className='res'; b.style.setProperty('--d',Math.min(i,12)*25+'ms');
+    b.innerHTML=`<span><small>${esc(['Home',...h.trail].join(' › '))}</small><b>${esc(h.n.t)}</b></span>${h.n.kids?`<span class="tag t-later">${leafCount(h.n)} items</span>`:tagHTML(h.n.tag)}`;
+    b.addEventListener('click',()=>go(h.p));
+    r.appendChild(b);
+  });
+  stage.innerHTML=''; stage.appendChild(v); chrome();
+});
+
+/* boot from #/a/b/c */
+(function(){
+  const h=location.hash.replace(/^#\/?/,''); const p=h?h.split('/').map(Number):[];
+  cur=valid(p)?p:[]; show([],{instant:true});
+})();
+</script>
+</body>
+</html>

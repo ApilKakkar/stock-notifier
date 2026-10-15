@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Data Laboratory</title>
+<style>
+:root{
+  --page:#c6e0e4; --page2:#dcecee; --cream:#fbf7f3; --surface:#ffffff;
+  --ink:#10332e; --muted:#566f6b; --line:#e5eae7;
+  --dark:#0d3531; --dark-ink:#e9f6f1; --accent:#3fb36b;
+  --teal:#2a7a82; --teal-soft:#e4f1f2; --teal-mid:#bcdadd;
+  --ok:#1d7a4a; --okbg:#dff3e7; --warn:#8a5a00; --warnbg:#fbefd2;
+  --shadow:0 10px 30px rgba(16,51,46,.08); --navbg:rgba(220,236,238,.82); --glass:rgba(255,255,255,.6); --swirl:#fff; --swirl-o:.45; --on-dark:#fff;
+}
+@media (prefers-color-scheme:dark){
+  :root{--page:#0b2a2d; --page2:#0d3033; --cream:#0a1f21; --surface:#112c2e;
+  --ink:#e6f3f0; --muted:#8fb0ac; --line:#1d3d3f; --dark:#0a403b; --dark-ink:#e9f6f1;
+  --accent:#52d08a; --teal:#6cc3ca; --teal-soft:#14383b; --teal-mid:#1f4a4e;
+  --ok:#6fd0a0; --okbg:#133a2b; --warn:#f0c46a; --warnbg:#3a2d10;
+  --shadow:0 10px 30px rgba(0,0,0,.35); --navbg:rgba(13,48,51,.85); --glass:rgba(17,44,46,.75); --swirl:#2a6b6f; --swirl-o:.25;}
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;color:var(--ink);font:15px/1.6 "Urbanist",-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif;
+  background:linear-gradient(180deg,var(--page) 0,var(--page2) 560px,var(--page) 100%);background-attachment:scroll}
+.hero{position:relative;overflow:hidden;padding:26px 24px 34px}
+.hero .swirl{position:absolute;pointer-events:none;opacity:var(--swirl-o);z-index:0}
+.wrap{z-index:1}
+.hero .s1{left:-60px;top:150px;width:260px}
+.hero .s2{right:-50px;top:40px;width:280px}
+.wrap{position:relative;max-width:1100px;margin:0 auto}
+.brand{display:flex;align-items:center;justify-content:space-between;margin-bottom:34px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:22px;letter-spacing:-.02em}
+.logo i{width:30px;height:30px;border-radius:9px;background:var(--dark);display:grid;place-items:center;color:var(--accent);font-style:normal;font-size:15px}
+.pill{font-size:12px;font-weight:600;color:var(--ink);background:var(--glass);border:1px solid var(--teal-mid);padding:6px 12px;border-radius:999px}
+h1{margin:0;text-align:center;font-size:clamp(30px,5vw,48px);line-height:1.12;letter-spacing:-.025em;font-weight:700;color:var(--ink)}
+.sub{text-align:center;color:var(--muted);margin:12px auto 22px;max-width:620px}
+.searchwrap{display:flex;justify-content:center;margin-bottom:26px}
+.search{width:100%;max-width:440px;padding:12px 18px;border:1px solid var(--teal-mid);border-radius:999px;background:var(--glass);color:var(--ink);font:inherit;font-size:14px;box-shadow:var(--shadow)}
+.search:focus{outline:2px solid var(--accent);border-color:transparent}
+.tiles{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:14px;max-width:880px;margin:0 auto}
+.tile{background:var(--surface);border-radius:18px;padding:18px 20px;box-shadow:var(--shadow)}
+.tile small{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.tile b{display:block;font-size:26px;letter-spacing:-.02em;margin-top:4px;line-height:1.15}
+.tile span{font-size:13px;color:var(--muted)}
+.tile.dark{background:var(--dark);color:var(--dark-ink)}
+.tile.dark small{color:var(--accent)} .tile.dark span{color:#a8cfc6}
+nav{position:sticky;top:0;z-index:5;background:var(--navbg);backdrop-filter:blur(10px)}
+nav .in{max-width:1100px;margin:0 auto;padding:12px 24px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
+nav .in::-webkit-scrollbar{display:none}
+nav a{position:relative;white-space:nowrap;text-decoration:none;color:var(--ink);font-size:12.5px;font-weight:600;padding:7px 14px;border-radius:3px;background:var(--glass);border:1px solid var(--teal-mid)}
+nav a:hover{background:var(--surface)}
+nav a.active{background:var(--dark);color:#fff;border-color:var(--dark);
+  clip-path:polygon(0 0,100% 0,100% calc(100% - 7px),calc(100% - 7px) calc(100% - 7px),calc(100% - 7px) 100%,0 100%)}
+.band{background:var(--cream);border-radius:34px 34px 0 0;margin-top:14px;box-shadow:0 -10px 40px rgba(16,51,46,.06)}
+main{max-width:1100px;margin:0 auto;padding:30px 24px 60px}
+section{margin-top:46px;scroll-margin-top:70px}
+h2{font-size:24px;letter-spacing:-.02em;font-weight:700;margin:0 0 16px;display:flex;align-items:center;gap:10px}
+h2::before{content:"";width:9px;height:9px;border-radius:3px;background:var(--accent)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px;box-shadow:0 4px 18px rgba(16,51,46,.05);transition:transform .15s,box-shadow .15s}
+.card:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.card h3{margin:0 0 5px;font-size:15.5px;font-weight:700;display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 8px;align-items:baseline}
+.card h3 code{max-width:100%;overflow-wrap:anywhere;font-weight:500}
+.card p{margin:0;color:var(--muted);font-size:14px}
+code{font:12px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--teal-soft);color:var(--teal);padding:1px 6px;border-radius:5px}
+.tag{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.t-dec{background:var(--okbg);color:var(--ok)} .t-chk{background:var(--warnbg);color:var(--warn)}
+.t-idea{background:var(--teal-soft);color:var(--teal)} .t-later{background:var(--line);color:var(--muted)}
+table{width:100%;border-collapse:separate;border-spacing:0;background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;font-size:14px;box-shadow:0 4px 18px rgba(16,51,46,.05)}
+th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--teal-soft);color:var(--teal);font-weight:700;font-size:11.5px;text-transform:uppercase;letter-spacing:.06em}
+tr:last-child td{border-bottom:0}
+.tw{overflow-x:auto;border-radius:16px}
+.note{background:var(--teal-soft);border:1px solid var(--teal-mid);border-radius:16px;padding:14px 18px;color:var(--ink);font-size:14px;margin:0}
+.note.dark{background:var(--dark);border-color:var(--dark);color:var(--dark-ink)} .note.dark b{color:var(--accent)}
+ul.plain{margin:0;padding-left:20px;color:var(--muted);font-size:14px} ul.plain b{color:var(--ink)}
+footer{background:linear-gradient(180deg,var(--cream),var(--page2));padding:30px 24px 44px;color:var(--muted);font-size:12.5px;text-align:center}
+.hide{display:none!important}
+@media (max-width:720px){.tiles{grid-template-columns:1fr}.hero{padding:20px 16px 26px} main{padding:20px 16px 40px} nav .in{padding:10px 16px} .band{border-radius:26px 26px 0 0}}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600;700&display=swap" rel="stylesheet"><!-- optional font; page falls back to system fonts offline -->
+</head>
+<body>
+<header class="hero">
+  <svg class="swirl s1" viewBox="0 0 200 200" fill="none"><path d="M20 140c40 40 120 20 120-40s-80-60-90-10 90 60 130-10" stroke="var(--swirl)" stroke-width="22" stroke-linecap="round"/></svg>
+  <svg class="swirl s2" viewBox="0 0 200 200" fill="none"><path d="M180 60c-40-40-140-20-130 40s90 50 90 0-70-40-110 20" stroke="var(--swirl)" stroke-width="22" stroke-linecap="round"/></svg>
+  <div class="wrap">
+    <div class="brand"><div class="logo"><i>◆</i>Data Lab</div><span class="pill">ml_ops_finance</span></div>
+    <h1>Data Laboratory</h1>
+    <p class="sub">Living notebook of data, signals and ideas for the ML-Ops finance project · India + US equities, gold, oil, crypto</p>
+    <div class="searchwrap"><input class="search" id="q" type="search" placeholder="Filter cards and rows… (e.g. ROE, VIX, tax)"></div>
+    <div class="tiles">
+      <div class="tile dark"><small>Prototype universe</small><b>NIFTY 50 + S&amp;P 100</b><span>Prove the pipeline, then scale to 200 / 500</span></div>
+      <div class="tile"><small>Span</small><b>2010 → 2026</b><span>Daily prices · quarterly fundamentals</span></div>
+      <div class="tile"><small>Benchmark</small><b>NIFTY 50 fund</b><span>Net of costs, tax &amp; FX</span></div>
+    </div>
+  </div>
+</header>
+<nav><div class="in">
+  <a href="#scope">Scope</a><a href="#daily">Daily</a><a href="#fund">Fundamentals</a><a href="#ca">Corp actions</a>
+  <a href="#macro-in">India macro</a><a href="#macro-us">US macro</a><a href="#cmd">Commodities</a><a href="#flows">India signals</a>
+  <a href="#brokers">Brokers & sources</a><a href="#ideas">Experiments</a><a href="#infra">Infra</a><a href="#open">Open checks</a><a href="#log">Changelog</a>
+</div></nav>
+
+<div class="band">
+<main>
+<p class="note">Legend: <span class="tag t-dec">Decided</span> <span class="tag t-chk">To check</span> <span class="tag t-idea">Idea</span> <span class="tag t-later">Later</span> · Bloomberg field mnemonics are starting points — confirm with <code>FLDS</code> / <code>HELP HELP</code> at the terminal.</p>
+
+<section id="scope"><h2>Scope & Universe</h2><div class="grid">
+  <div class="card"><h3>Prototype universe <span class="tag t-dec">Decided</span></h3><p>NIFTY 50 (India) + S&amp;P 100 (US). Prove the pipeline end-to-end before scaling.</p></div>
+  <div class="card"><h3>Full universe <span class="tag t-later">Later</span></h3><p>NIFTY 200 (skip NIFTY 500 — small caps too illiquid) + S&amp;P 500. Use <b>historical constituents</b> incl. delisted names (<code>INDX_MWEIGHT_HIST</code>) to avoid survivorship bias.</p></div>
+  <div class="card"><h3>Time span <span class="tag t-dec">Decided</span></h3><p>2010 → 2026, daily. Covers taper tantrum, 2015–16, 2018, COVID crash, 2022 hikes — enough regimes to stress-test.</p></div>
+  <div class="card"><h3>Frequency <span class="tag t-dec">Decided</span></h3><p>Daily prices; quarterly fundamentals. Rebalance weekly/monthly — frictions kill high-frequency ideas.</p></div>
+  <div class="card"><h3>Benchmark <span class="tag t-dec">Decided</span></h3><p>Plain NIFTY 50 index fund (INR, net of costs). Every strategy must beat this after all frictions.</p></div>
+</div></section>
+
+<section id="daily"><h2>Daily price fields</h2><div class="tw"><table>
+<tr><th>Field</th><th>What it is</th><th>Why we need it</th></tr>
+<tr><td><code>PX_LAST</code></td><td>Closing price</td><td>Core price series; momentum, volatility features</td></tr>
+<tr><td><code>PX_VOLUME</code></td><td>Shares traded</td><td>Liquidity filter, slippage model, volume signals</td></tr>
+<tr><td><code>PX_OPEN / PX_HIGH / PX_LOW</code></td><td>OHLC</td><td>Next-open execution, range/volatility features</td></tr>
+<tr><td><code>TOT_RETURN_INDEX_GROSS_DVDS</code></td><td>Total-return index (splits + dividends adjusted)</td><td>Correct returns — raw prices drop on dividend/bonus dates</td></tr>
+<tr><td><code>CUR_MKT_CAP</code></td><td>Market capitalisation</td><td>Size factor, weighting, universe filter</td></tr>
+<tr><td><code>EQY_SH_OUT</code></td><td>Shares outstanding</td><td>Recompute market cap, catch dilution/buybacks</td></tr>
+</table></div></section>
+
+<section id="fund"><h2>Quarterly fundamentals</h2><div class="grid">
+  <div class="card"><h3>P/E <code>PE_RATIO</code></h3><p>Price ÷ earnings per share. How many rupees/dollars you pay for ₹1/$1 of profit. Low = cheap (or troubled).</p></div>
+  <div class="card"><h3>P/B <code>PX_TO_BOOK_RATIO</code></h3><p>Price ÷ book value per share. Valuation vs net assets; most useful for banks/asset-heavy firms.</p></div>
+  <div class="card"><h3>EV/EBITDA <code>CURRENT_EV_TO_T12M_EBITDA</code></h3><p>Enterprise value ÷ operating cash profit. Capital-structure-neutral valuation; compares firms with different debt.</p></div>
+  <div class="card"><h3>ROE <code>RETURN_COM_EQY</code></h3><p>Net income ÷ shareholders’ equity. How efficiently the company turns owners’ money into profit — a quality signal.</p></div>
+  <div class="card"><h3>Debt/Equity <code>TOT_DEBT_TO_TOT_EQY</code></h3><p>Total debt ÷ equity. Leverage and balance-sheet risk; high values hurt in rate-hike regimes.</p></div>
+  <div class="card"><h3>EPS <code>IS_EPS</code></h3><p>Earnings per share. Base for growth and earnings-surprise features.</p></div>
+  <div class="card"><h3>Revenue & growth <code>SALES_REV_TURN</code></h3><p>Top-line sales and YoY/QoQ growth. Growth factor; harder to manipulate than earnings.</p></div>
+  <div class="card"><h3>Gross margin <code>GROSS_MARGIN</code></h3><p>(Revenue − COGS) ÷ revenue. Pricing power; stable margins = quality.</p></div>
+  <div class="card"><h3>Consensus EPS <code>BEST_EPS</code></h3><p>Analyst consensus estimate. Actual − consensus = earnings surprise, a classic drift signal.</p></div>
+  <div class="card"><h3>Sector <code>GICS_SECTOR_NAME</code></h3><p>Industry classification. Sector-neutral ranking; avoid accidentally betting on one sector.</p></div>
+</div>
+<p class="note dark" style="margin-top:14px"><b>Point-in-time rule:</b> join fundamentals on the <b>filing/announcement date</b>, not period-end. If only period-end is known, lag 45–60 days. Otherwise: look-ahead bias.</p>
+<div class="grid" style="margin-top:14px">
+  <div class="card"><h3>Free fundamentals — India <span class="tag t-idea">Idea</span></h3><p>Screener.in Excel export (per company, validation), NSE/BSE XBRL filings (automatable, has filing dates).</p></div>
+  <div class="card"><h3>Free fundamentals — US <span class="tag t-dec">Decided</span></h3><p>SEC EDGAR XBRL API / <code>edgartools</code> — official, full history, includes <code>filed</code> date.</p></div>
+</div></section>
+
+<section id="ca"><h2>Corporate actions</h2><div class="grid">
+  <div class="card"><h3>Splits & bonuses</h3><p>Change share count without changing value. Must adjust prices or returns look like crashes.</p></div>
+  <div class="card"><h3>Dividends</h3><p>Cash paid out; price drops on ex-date. Captured by total-return index; track yield separately.</p></div>
+  <div class="card"><h3>Mergers, demergers, delistings</h3><p>Ticker changes and exits. Critical for survivorship-free history. Bloomberg <code>CACS</code>.</p></div>
+  <div class="card"><h3>Buybacks / rights issues</h3><p>Shift share count and signal management view on valuation.</p></div>
+</div></section>
+
+<section id="macro-in"><h2>Market & macro — India</h2><div class="tw"><table>
+<tr><th>Series</th><th>One-liner</th><th>Source</th></tr>
+<tr><td>NIFTY 50 / Bank NIFTY</td><td>Market and banking-sector benchmarks; regime and beta features</td><td>Bloomberg, NSE, broker API</td></tr>
+<tr><td>India VIX</td><td>Expected 30-day NIFTY volatility — the "fear gauge"; de-risk trigger</td><td>NSE, Bloomberg</td></tr>
+<tr><td>RBI policy (repo) rate</td><td>Cost of money; hikes pressure valuations and leveraged firms</td><td>RBI DBIE, Bloomberg</td></tr>
+<tr><td>India 10Y G-sec yield</td><td>Risk-free long rate; discount rate for equities</td><td>Bloomberg, RBI</td></tr>
+<tr><td>USD/INR</td><td>Converts US returns to INR; rupee weakness adds to US returns</td><td>Bloomberg <code>USDINR Curncy</code>, Alpha Vantage</td></tr>
+</table></div></section>
+
+<section id="macro-us"><h2>Market & macro — US</h2><div class="tw"><table>
+<tr><th>Series</th><th>One-liner</th><th>Source</th></tr>
+<tr><td>S&amp;P 500 / S&amp;P 100</td><td>US benchmark and prototype universe</td><td>Bloomberg, yfinance, Tiingo</td></tr>
+<tr><td>VIX</td><td>Expected 30-day S&amp;P volatility; global risk-on/off signal</td><td>Bloomberg <code>VIX Index</code>, FRED <code>VIXCLS</code></td></tr>
+<tr><td>3M T-bill</td><td>US risk-free rate for Sharpe ratio and cash return</td><td>FRED <code>DTB3</code>, Bloomberg <code>USGG3M Index</code></td></tr>
+<tr><td>US 10Y Treasury yield</td><td>Global discount rate; drives growth-vs-value rotation</td><td>FRED <code>DGS10</code>, Bloomberg <code>USGG10YR Index</code></td></tr>
+<tr><td>FOMC & earnings dates</td><td>Event calendar; avoid trading into known volatility</td><td>Bloomberg <code>ECO</code>, Fed site</td></tr>
+</table></div></section>
+
+<section id="cmd"><h2>Commodities & crypto</h2><div class="grid">
+  <div class="card"><h3>Gold</h3><p>Crisis hedge. <code>XAU Curncy</code> spot + <code>GOLDBEES</code>/MCX for INR view (includes import duty).</p></div>
+  <div class="card"><h3>Oil</h3><p>India is a big importer — oil shocks hit INR and margins. Brent <code>CO1 Comdty</code>, WTI <code>CL1 Comdty</code> (roll-adjusted).</p></div>
+  <div class="card"><h3>Crypto (BTC, ETH)</h3><p>Free via Binance / <code>ccxt</code>. History only from ~2015–17 — align backtest windows.</p></div>
+  <div class="card"><h3>Silver <span class="tag t-later">Later</span></h3><p><code>XAG Curncy</code>. Optional diversifier.</p></div>
+</div></section>
+
+<section id="flows"><h2>India-specific signals</h2><div class="grid">
+  <div class="card"><h3>FII / DII daily flows <span class="tag t-idea">Idea</span></h3><p>Net buying by foreign vs domestic institutions (NSE daily). Persistent FII selling often precedes weakness.</p></div>
+  <div class="card"><h3>Promoter holding & pledging <span class="tag t-idea">Idea</span></h3><p>Rising pledges = promoter stress; insider buying = conviction. From shareholding filings.</p></div>
+  <div class="card"><h3>Bulk & block deals <span class="tag t-idea">Idea</span></h3><p>Large disclosed trades by big players (NSE/BSE daily).</p></div>
+  <div class="card"><h3>AMFI SIP inflows <span class="tag t-idea">Idea</span></h3><p>Monthly retail mutual-fund inflows — a retail sentiment proxy.</p></div>
+  <div class="card"><h3>Concall sentiment (LLM) <span class="tag t-later">Later</span></h3><p>Score Indian earnings-call transcripts for tone and guidance changes.</p></div>
+</div></section>
+
+<section id="brokers"><h2>Brokers & data APIs</h2><div class="tw"><table>
+<tr><th>Provider</th><th>Use</th><th>Cost</th><th>Status</th></tr>
+<tr><td>Fyers API v3</td><td>India daily/intraday candles, websockets</td><td>Free with account</td><td><span class="tag t-idea">Shortlist</span></td></tr>
+<tr><td>Angel One SmartAPI</td><td>India historical candles</td><td>Free with account</td><td><span class="tag t-idea">Shortlist</span></td></tr>
+<tr><td>Upstox API v2</td><td>India REST + websocket</td><td>Free with account</td><td><span class="tag t-later">Backup</span></td></tr>
+<tr><td>Zerodha Kite Connect</td><td>Most mature India API</td><td>Paid (historical add-on)</td><td><span class="tag t-chk">Check price</span></td></tr>
+<tr><td>NSE bhavcopy</td><td>Official EOD dump</td><td>Free, no auth</td><td><span class="tag t-dec">Fallback</span></td></tr>
+<tr><td>Interactive Brokers</td><td>US execution, paper trading</td><td>Account via LRS</td><td><span class="tag t-later">Later</span></td></tr>
+<tr><td>Tiingo / yfinance</td><td>US daily prices</td><td>Free tier</td><td><span class="tag t-dec">Use</span></td></tr>
+<tr><td>SEC EDGAR</td><td>US fundamentals</td><td>Free</td><td><span class="tag t-dec">Use</span></td></tr>
+<tr><td>FRED</td><td>US macro</td><td>Free</td><td><span class="tag t-dec">Use</span></td></tr>
+<tr><td>ccxt / Binance</td><td>Crypto</td><td>Free</td><td><span class="tag t-dec">Use</span></td></tr>
+<tr><td>Bloomberg (IIM lab)</td><td>Constituents, fundamentals, consensus, gap-fill</td><td>Institutional</td><td><span class="tag t-chk">Book slots</span></td></tr>
+<tr><td>Vested</td><td>US execution (manual — no retail API)</td><td>Platform fees</td><td><span class="tag t-dec">Manual</span></td></tr>
+</table></div></section>
+
+<section id="ideas"><h2>Experiments & principles</h2><div class="grid">
+  <div class="card"><h3>Satellite allocation first <span class="tag t-dec">Decided</span></h3><p>Core stays in index funds; model runs on paper, then 5–10% satellite. Compare vs index for 1–2 years before trusting.</p></div>
+  <div class="card"><h3>Exp 1 · 12-1 momentum <span class="tag t-idea">Idea</span></h3><p>Top-10 NIFTY 50 by 12-month return (skip last month), monthly rebalance vs buy-and-hold.</p></div>
+  <div class="card"><h3>Exp 2 · Quality + value <span class="tag t-idea">Idea</span></h3><p>Rank on ROE, D/E, EV/EBITDA; sector-neutral; quarterly rebalance.</p></div>
+  <div class="card"><h3>Exp 3 · Low-volatility <span class="tag t-idea">Idea</span></h3><p>Lowest 1-year volatility names — target similar return with smaller drawdowns.</p></div>
+  <div class="card"><h3>Exp 4 · Regime switch <span class="tag t-idea">Idea</span></h3><p>De-risk to gold/cash when India VIX spikes or FII outflows persist.</p></div>
+  <div class="card"><h3>Exp 5 · India + US mix in INR <span class="tag t-idea">Idea</span></h3><p>Does US diversification beat NIFTY after FX spread, LRS lag, TCS and tax?</p></div>
+  <div class="card"><h3>Tax-aware rebalancing <span class="tag t-dec">Principle</span></h3><p>India equity: STCG 20% (&lt;12m), LTCG 12.5% above ₹1.25L. Foreign stocks: slab rate &lt;24m, 12.5% after. Prefer holding winners past thresholds. Verify with a CA.</p></div>
+  <div class="card"><h3>Explainability is key <span class="tag t-dec">Principle</span></h3><p>Every signal ships with a plain-English rationale (top feature contributions via SHAP + LLM summary). No black-box trades.</p></div>
+  <div class="card"><h3>Honest validation <span class="tag t-dec">Principle</span></h3><p>Walk-forward only; one-day execution lag; costs + taxes + FX. Red flags: CAGR &gt;25%, Sharpe &gt;2, smooth curve.</p></div>
+</div></section>
+
+<section id="infra"><h2>Compute & infrastructure</h2><div class="grid">
+  <div class="card"><h3>Local · M5 MacBook Air <span class="tag t-dec">Decided</span></h3><p>Enough for prototype: Polars + DuckDB + Parquet, LightGBM, MLflow. Fanless — long sweeps throttle.</p></div>
+  <div class="card"><h3>Scheduling <span class="tag t-idea">Idea</span></h3><p>GitHub Actions cron or GCP Cloud Scheduler → Cloud Run. India job ~16:30 IST, US job ~07:00 IST.</p></div>
+  <div class="card"><h3>GCP scale-up <span class="tag t-later">Later</span></h3><p>BigQuery for the full universe, Vertex AI for hyperparameter sweeps / pipelines, GCS for Parquet. Or Colab for ad-hoc GPU.</p></div>
+  <div class="card"><h3>Same feature code <span class="tag t-dec">Principle</span></h3><p>One feature module for backtest and live — prevents train/serve skew.</p></div>
+</div></section>
+
+<section id="open"><h2>Open checks</h2><div class="tw"><table>
+<tr><th>Item</th><th>Why</th><th>Status</th></tr>
+<tr><td>WRDS / CRSP access at IIM Udaipur</td><td>Gold-standard survivorship-free US data</td><td><span class="tag t-chk">To check</span></td></tr>
+<tr><td>Bloomberg terminal booking & export policy</td><td>Download limits, USB/email export</td><td><span class="tag t-chk">To check</span></td></tr>
+<tr><td>Broker account + API key (Fyers / Angel One)</td><td>Approval takes a few days</td><td><span class="tag t-chk">To do</span></td></tr>
+<tr><td>Bloomberg ↔ free-source reconciliation</td><td>Overlap period to avoid feature drift when switching sources</td><td><span class="tag t-later">Later</span></td></tr>
+<tr><td>SEBI retail algo framework</td><td>Rules before automating live orders</td><td><span class="tag t-later">Later</span></td></tr>
+</table></div></section>
+
+<section id="log"><h2>Changelog</h2><ul class="plain">
+  <li><b>2026-10-15</b> — Restyled with the Syntix-style theme (pale teal gradient, cream sections, dark-teal accents, green highlight, notched active chips). Content unchanged.</li>
+  <li><b>2026-10-15</b> — Page created: scope, daily & quarterly fields, corporate actions, India/US macro, commodities, India signals, brokers, experiments, infra, open checks.</li>
+</ul></section>
+</main>
+</div>
+<footer>Data Laboratory · append-only notebook · see CLAUDE.md for update rules</footer>
+
+<script>
+const q=document.getElementById('q');
+q.addEventListener('input',()=>{
+  const t=q.value.trim().toLowerCase();
+  document.querySelectorAll('.card, table tr').forEach(el=>{
+    if(el.querySelector('th')) return;
+    el.classList.toggle('hide', t && !el.textContent.toLowerCase().includes(t));
+  });
+  document.querySelectorAll('main section').forEach(sec=>{
+    if(sec.id==='log') return;
+    const items=sec.querySelectorAll('.card, table tr:not(:first-child)');
+    const any=[...items].some(e=>!e.classList.contains('hide'));
+    sec.classList.toggle('hide', !!t && !any);
+  });
+});
+</script>
+<script>
+(function(){
+  const links=[...document.querySelectorAll('nav a')];
+  const map=new Map(links.map(a=>[a.getAttribute('href').slice(1),a]));
+  const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){links.forEach(l=>l.classList.remove('active'));const a=map.get(e.target.id);if(a){a.classList.add('active');a.scrollIntoView({block:'nearest',inline:'center'});}}})},{rootMargin:'-20% 0px -70% 0px'});
+  document.querySelectorAll('main section').forEach(sec=>io.observe(sec));
+  if(links[0]) links[0].classList.add('active');
+})();
+</script>
+</body>
+</html>

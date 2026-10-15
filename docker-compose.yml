@@ -1,0 +1,18 @@
+services:
+  web:
+    build: .
+    image: ml-ops-finance:latest
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+  # Dev mode: live-edit data-lab.html / app code without rebuilding
+  #   docker compose --profile dev up web-dev
+  web-dev:
+    profiles: ["dev"]
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data-lab.html:/srv/data-lab.html:ro
+      - ./app:/srv/app:ro
+    command: ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload"]
